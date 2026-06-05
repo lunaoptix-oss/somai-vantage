@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -839,16 +839,20 @@
   <!-- Bottom nav -->
   <nav class="bottom-nav">
     <button class="nav-item" :class="{active: tab==='dashboard'}" @click="tab='dashboard'">
-      <span class="icon">ðŸ“Š</span><span>Dashboard</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Dashboard</span>
     </button>
     <button class="nav-item" :class="{active: tab==='analyze'}" @click="tab='analyze'">
-      <span class="icon">ðŸ”</span><span>Analyze</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Analyze</span>
     </button>
     <button class="nav-item" :class="{active: tab==='agents'}" @click="tab='agents'">
-      <span class="icon">ðŸ¤–</span><span>Agents</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
+      <span>Agents</span>
     </button>
     <button class="nav-item" :class="{active: tab==='perf'}" @click="tab='perf';loadPerf()">
-      <span class="icon">ðŸ“ˆ</span><span>Performance</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span>Performance</span>
     </button>
   </nav>
 
