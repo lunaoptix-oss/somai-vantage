@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="SomAI Vantage"/>
+  <meta name="theme-color" content="#c9a84c"/>
+  <link rel="manifest" href="/static/manifest.json"/>
+  <title>SomAI Vantage</title>
+  <script src="/static/chart.min.js"></script>
+  <script src="/static/alpine.min.js" defer></script>
+  <style>
+    :root {
+      --bg:      #0a0e1a;
+      --card:    #111827;
+      --card2:   #1a2236;
+      --border:  #1e2d45;
+      --gold:    #c9a84c;
+      --gold2:   #e8c96d;
+      --green:   #22c55e;
+      --red:     #ef4444;
+      --blue:    #3b82f6;
+      --cyan:    #06b6d4;
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+      --nav-h:   64px;
+      --safe-b:  env(safe-area-inset-bottom, 0px);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Inter', sans-serif; overscroll-behavior: none; }
+
+    /* ── Top bar ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 56px; padding: 0 16px;
+      background: rgba(10,14,26,.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: env(safe-area-inset-top, 0);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .logo-chip {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 12px; color: #000;
+    }
+    .topbar-title { font-size: 15px; font-weight: 700; color: var(--gold2); }
+    .topbar-sub   { font-size: 10px; color: var(--muted); }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .pill-btn {
+      padding: 7px 14px; border-radius: 20px; border: none; cursor: pointer;
+      font-size: 12px; font-weight: 700; transition: opacity .15s;
+    }
+    .pill-btn:active { opacity: .7; }
+    .pill-gold  { background: var(--gold); color: #000; }
+    .pill-ghost { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
+
+    /* ── Scroll area ── */
+    .page-wrap {
+      padding-top: calc(56px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(var(--nav-h) + var(--safe-b) + 16px);
+      min-height: 100vh;
+    }
+    .page { display: none; padding: 16px; }
+    .page.active { display: block; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      height: calc(var(--nav-h) + var(--safe-b));
+      padding-bottom: var(--safe-b);
+      background: rgba(10,14,26,.95); backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; border: none; background: none; cursor: pointer;
+      color: var(--muted); font-size: 10px; font-weight: 600;
+      transition: color .15s; padding: 0;
+    }
+    .nav-item.active { color: var(--gold2); }
+    .nav-item .icon { font-size: 20px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; margin-bottom: 12px;
+    }
+    .card-header {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-title { font-size: 13px; font-weight: 700; }
+    .card-body  { padding: 16px; }
+
+    /* ── KPI row ── */
+    .kpi-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 14px;
+    }
+    .kpi {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 12px; text-align: center;
+    }
+    .kpi-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+    .kpi-val   { font-size: 22px; font-weight: 800; line-height: 1; }
+    .kpi-sub   { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Stock row ── */
+    .stock-row {
+      display: flex; align-items: center; padding: 14px 16px;
+      border-bottom: 1px solid rgba(30,45,69,.5); cursor: pointer;
+      transition: background .15s; gap: 12px;
+    }
+    .stock-row:last-child { border-bottom: none; }
+    .stock-row:active { background: var(--card2); }
+    .stock-avatar {
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 11px; color: #000;
+    }
+    .stock-info { flex: 1; min-width: 0; }
+    .stock-ticker { font-size: 15px; font-weight: 700; }
+    .stock-meta   { font-size: 11px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stock-right  { text-align: right; flex-shrink: 0; }
+    .stock-price  { font-size: 15px; font-weight: 700; }
+    .stock-change { font-size: 11px; margin-top: 2px; }
+
+    /* ── Action badge ── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: .3px;
+    }
+    .badge-STRONG-BUY  { background: #052e16; color: #86efac; border: 1px solid #166534; }
+    .badge-BUY         { background: #052e16; color: #4ade80; border: 1px solid #15803d; }
+    .badge-HOLD        { background: #1c1917; color: #a8a29e; border: 1px solid #44403c; }
+    .badge-SELL        { background: #450a0a; color: #fca5a5; border: 1px solid #991b1b; }
+    .badge-STRONG-SELL { background: #450a0a; color: #ef4444; border: 1px solid #dc2626; }
+
+    /* ── Score bar ── */
+    .score-track { height: 4px; background: var(--card2); border-radius: 2px; margin-top: 5px; }
+    .score-fill  { height: 100%; border-radius: 2px; }
+
+    /* ── Detail sheet (slide-up) ── */
+    .sheet-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+      display: none;
+    }
+    .sheet-overlay.open { display: block; }
+    .sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
+      background: var(--card); border-radius: 24px 24px 0 0;
+      max-height: 92vh; overflow-y: auto;
+      transform: translateY(100%); transition: transform .3s cubic-bezier(.32,.72,0,1);
+      padding-bottom: calc(24px + var(--safe-b));
+    }
+    .sheet.open { transform: translateY(0); }
+    .sheet-handle {
+      width: 36px; height: 4px; border-radius: 2px;
+      background: var(--border); margin: 12px auto 0;
+    }
+    .sheet-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .sheet-close {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--card2); border: none; cursor: pointer;
+      color: var(--muted); font-size: 14px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* ── Analyst box (hero) ── */
+    .analyst-hero {
+      margin: 0 16px 12px;
+      background: linear-gradient(135deg, #0d1f38, #0f2744);
+      border: 1px solid #1e3a5f; border-radius: 16px; padding: 16px;
+    }
+    .analyst-rec  { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
+    .analyst-val  { font-size: 28px; font-weight: 800; color: var(--gold2); }
+    .analyst-row  { display: flex; gap: 12px; margin-top: 12px; }
+    .analyst-item { flex: 1; background: rgba(255,255,255,.04); border-radius: 10px; padding: 10px; text-align: center; }
+    .analyst-item-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .analyst-item-val   { font-size: 17px; font-weight: 700; margin-top: 3px; }
+
+    /* ── Metrics list ── */
+    .metric-list { padding: 0 16px; }
+    .mrow {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 0; border-bottom: 1px solid rgba(30,45,69,.5);
+      font-size: 13px;
+    }
+    .mrow:last-child { border-bottom: none; }
+    .mrow-label { color: var(--muted); }
+    .mrow-val   { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .mini-bar   { width: 50px; height: 5px; background: var(--card2); border-radius: 3px; overflow: hidden; }
+    .mini-fill  { height: 100%; border-radius: 3px; }
+
+    /* ── Price target ruler ── */
+    .pt-ruler { margin: 0 16px 16px; position: relative; }
+    .pt-track {
+      height: 8px; border-radius: 4px; position: relative;
+      background: linear-gradient(to right, #450a0a 0%, #1c2b1c 50%, #052e16 100%);
+      margin: 28px 0 20px;
+    }
+    .pt-marker {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--bg);
+    }
+    .pt-label {
+      position: absolute; top: -20px; font-size: 9px;
+      transform: translateX(-50%); white-space: nowrap; font-weight: 600;
+    }
+    .pt-sub {
+      position: absolute; bottom: -18px; font-size: 9px;
+      transform: translateX(-50%); white-space: nowrap; color: var(--muted);
+    }
+
+    /* ── Risk dots ── */
+    .risk-dots { display: flex; gap: 4px; }
+    .rdot { width: 12px; height: 12px; border-radius: 3px; background: var(--card2); }
+    .rdot.g { background: var(--green); }
+    .rdot.y { background: #facc15; }
+    .rdot.r { background: var(--red); }
+
+    /* ── News item ── */
+    .news-item { padding: 12px 16px; border-bottom: 1px solid rgba(30,45,69,.5); }
+    .news-item:last-child { border-bottom: none; }
+    .news-title { font-size: 13px; line-height: 1.45; }
+    .news-foot  { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 11px; color: var(--muted); }
+    .sent-chip  { padding: 2px 7px; border-radius: 8px; font-size: 10px; font-weight: 600; }
+    .sent-pos   { background: #052e16; color: #4ade80; }
+    .sent-neg   { background: #450a0a; color: #fca5a5; }
+    .sent-neu   { background: #1c1917; color: #a8a29e; }
+
+    /* ── Section label ── */
+    .sec-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .8px; color: var(--muted);
+      padding: 16px 16px 6px;
+    }
+
+    /* ── Loader ── */
+    .loader {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 14px; padding: 60px 20px;
+    }
+    .spin {
+      width: 36px; height: 36px; border: 3px solid var(--border);
+      border-top-color: var(--gold); border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-txt { font-size: 13px; color: var(--muted); text-align: center; }
+
+    /* ── Empty state ── */
+    .empty { padding: 60px 24px; text-align: center; color: var(--muted); }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .empty-sub   { font-size: 13px; line-height: 1.5; }
+
+    /* ── Analyze search ── */
+    .search-wrap { padding: 12px 16px; display: flex; gap: 10px; }
+    .ticker-inp {
+      flex: 1; background: var(--card2); border: 1px solid var(--border);
+      color: var(--text); padding: 12px 14px; border-radius: 12px;
+      font-size: 16px; text-transform: uppercase; font-weight: 700;
+      outline: none; -webkit-appearance: none;
+    }
+    .ticker-inp:focus { border-color: var(--gold); }
+    .go-btn {
+      padding: 12px 20px; border-radius: 12px; border: none;
+      background: var(--gold); color: #000; font-weight: 800; font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* ── Agent pipeline ── */
+    .agent-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; margin-bottom: 10px;
+    }
+    .agent-num  { font-size: 9px; color: var(--gold); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
+    .agent-name { font-size: 14px; font-weight: 700; margin: 4px 0 8px; }
+    .agent-sub  { font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .agent-dot  { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 5px; vertical-align: middle; }
+    .agent-arrow { text-align: center; color: var(--gold); font-size: 20px; margin: -4px 0; }
+
+    /* ── Perf tab ── */
+    .perf-big { font-size: 40px; font-weight: 800; line-height: 1; }
+    .signal-row { padding: 12px 16px; border-bottom: 1px solid rgba(30,45,69,.5); display: flex; align-items: center; gap: 12px; }
+    .signal-row:last-child { border-bottom: none; }
+
+    /* scrollbar hide on mobile */
+    .sheet::-webkit-scrollbar { display: none; }
+
+    /* radar chart */
+    .radar-wrap { padding: 16px; max-width: 320px; margin: 0 auto; }
+  </style>
+</head>
+<body x-data="app()" x-init="init()">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo-chip">S∧</div>
+      <div>
+        <div class="topbar-title">SomAI Vantage</div>
+        <div class="topbar-sub" x-text="lastUpdated || '5-Agent Intelligence Platform'"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="pill-btn pill-gold" @click="tab==='dashboard' ? screenAll() : analyzeTicker()" :disabled="loading||analyzing">
+        <span x-show="!loading && !analyzing" x-text="tab==='analyze' ? 'Run' : '⟳ Screen'"></span>
+        <span x-show="loading||analyzing">…</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- ═══ DASHBOARD PAGE ═══ -->
+    <div class="page" :class="{active: tab==='dashboard'}" id="page-dashboard">
+
+      <!-- KPIs -->
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Strong Buys</div>
+          <div class="kpi-val" style="color:var(--green)" x-text="kpis.strongBuy"></div>
+          <div class="kpi-sub">signals</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Bullish</div>
+          <div class="kpi-val" style="color:#4ade80" x-text="kpis.bullish"></div>
+          <div class="kpi-sub">of <span x-text="kpis.total"></span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Avg Risk</div>
+          <div class="kpi-val" style="color:var(--gold2)" x-text="kpis.avgRisk"></div>
+          <div class="kpi-sub">out of 10</div>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;">
+        <template x-for="f in filters" :key="f.val">
+          <button @click="filterClass=f.val"
+            style="flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;"
+            :style="filterClass===f.val ? 'background:'+f.color+';color:#000;border-color:'+f.color : 'background:var(--card);color:var(--muted);border-color:var(--border)'"
+            x-text="f.label"></button>
+        </template>
+      </div>
+
+      <!-- Loader -->
+      <div class="loader" x-show="loading">
+        <div class="spin"></div>
+        <div class="loader-txt">Running 5-agent analysis on <span x-text="screenCount"></span> stocks…<br>Fetching live prices, fundamentals & news</div>
+      </div>
+
+      <!-- Stock list -->
+      <div class="card" x-show="!loading && filteredStocks.length > 0">
+        <template x-for="s in filteredStocks" :key="s.ticker">
+          <div class="stock-row" @click="openDetail(s)">
+            <div class="stock-avatar" :style="'background:'+avatarColor(s.summary?.classification)">
+              <span x-text="s.ticker.slice(0,3)"></span>
+            </div>
+            <div class="stock-info">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="stock-ticker" x-text="s.ticker"></span>
+                <span class="badge" :class="actionClass(s.summary?.action)" x-text="s.summary?.action"></span>
+              </div>
+              <div class="stock-meta" x-text="(s.fundamentals?.sector||'') + ' · ' + (s.fundamentals?.analyst_recommendation||'') + ' analyst rec'"></div>
+              <div class="score-track" style="width:100px">
+                <div class="score-fill" :style="'width:'+(s.summary?.composite_score*100)+'%;background:'+scoreColor(s.summary?.composite_score)"></div>
+              </div>
+            </div>
+            <div class="stock-right">
+              <div class="stock-price" x-text="'$'+(s.price_targets?.current||'—')"></div>
+              <div class="stock-change"
+                   :style="'color:'+(s.market?.return_1m>=0?'var(--green)':'var(--red)')"
+                   x-text="(s.market?.return_1m>=0?'+':'')+s.market?.return_1m+'% 1M'"></div>
+              <div style="font-size:10px;color:var(--muted);margin-top:2px" x-text="'Risk '+s.risk?.risk_score+'/10'"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty" x-show="!loading && filteredStocks.length === 0">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">No stocks loaded yet</div>
+        <div class="empty-sub">Tap <strong style="color:var(--gold2)">⟳ Screen</strong> to run the 5-agent pipeline across 20 top stocks.</div>
+      </div>
+
+    </div>
+
+    <!-- ═══ ANALYZE PAGE ═══ -->
+    <div class="page" :class="{active: tab==='analyze'}" id="page-analyze">
+      <div class="search-wrap">
+        <input class="ticker-inp" x-model="searchTicker" placeholder="NVDA, TSLA, AAPL…"
+               @keyup.enter="analyzeTicker()" maxlength="10" autocomplete="off" autocorrect="off"/>
+        <button class="go-btn" @click="analyzeTicker()" :disabled="analyzing">
+          <span x-show="!analyzing">GO</span>
+          <span x-show="analyzing">…</span>
+        </button>
+      </div>
+
+      <!-- Quick tickers -->
+      <div style="display:flex;gap:8px;padding:0 16px 14px;overflow-x:auto;">
+        <template x-for="t in ['NVDA','MSFT','AMZN','META','TSLA','GOOGL','JPM','LLY']" :key="t">
+          <button @click="searchTicker=t;analyzeTicker()"
+            style="flex-shrink:0;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;">
+            <span x-text="t"></span>
+          </button>
+        </template>
+      </div>
+
+      <div class="loader" x-show="analyzing">
+        <div class="spin"></div>
+        <div class="loader-txt">Running 5-agent pipeline on <strong x-text="searchTicker.toUpperCase()" style="color:var(--gold2)"></strong>…</div>
+      </div>
+
+      <div x-show="analyzeError" style="padding:16px;color:var(--red);font-size:13px;" x-text="analyzeError"></div>
+
+      <div x-show="analyzeResult && !analyzing">
+        <!-- Analyst Hero -->
+        <div class="sec-label">Analyst Consensus</div>
+        <div class="analyst-hero">
+          <div class="analyst-rec">Analyst Recommendation</div>
+          <div class="analyst-val" x-text="analyzeResult?.fundamentals?.analyst_recommendation || '—'"></div>
+          <div class="analyst-row">
+            <div class="analyst-item">
+              <div class="analyst-item-label">Target Price</div>
+              <div class="analyst-item-val" style="color:var(--cyan)" x-text="'$'+(analyzeResult?.price_targets?.analyst_target||'—')"></div>
+            </div>
+            <div class="analyst-item">
+              <div class="analyst-item-label">Current</div>
+              <div class="analyst-item-val" x-text="'$'+(analyzeResult?.price_targets?.current||'—')"></div>
+            </div>
+            <div class="analyst-item">
+              <div class="analyst-item-label">Upside</div>
+              <div class="analyst-item-val"
+                   :style="'color:'+(analyzeResult?.price_targets?.upside_pct>=0?'var(--green)':'var(--red)')"
+                   x-text="(analyzeResult?.price_targets?.upside_pct>=0?'+':'')+analyzeResult?.price_targets?.upside_pct+'%'"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Signal -->
+        <div class="sec-label">AI Signal</div>
+        <div class="card" style="margin:0 0 12px">
+          <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Agent Decision</div>
+              <div style="font-size:22px;font-weight:800;" x-text="analyzeResult?.summary?.action"></div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;" x-text="analyzeResult?.summary?.confidence+'% confidence · '+analyzeResult?.summary?.timeframe"></div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Composite Score</div>
+              <div style="font-size:28px;font-weight:800;"
+                   :style="'color:'+scoreColor(analyzeResult?.summary?.composite_score)"
+                   x-text="((analyzeResult?.summary?.composite_score||0)*100).toFixed(0)+'%'"></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;" x-text="analyzeResult?.summary?.classification?.replace('_',' ')"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Targets -->
+        <div class="sec-label">Price Targets & Trade Levels</div>
+        <div class="card" style="margin:0 0 12px">
+          <div class="metric-list">
+            <div class="mrow"><span class="mrow-label">🟢 Bull Target</span><span class="mrow-val" style="color:var(--green)" x-text="'$'+analyzeResult?.price_targets?.bull_target+' (+'+analyzeResult?.price_targets?.upside_pct+'%)'"></span></div>
+            <div class="mrow"><span class="mrow-label">📊 Analyst Target</span><span class="mrow-val" style="color:var(--cyan)" x-text="'$'+(analyzeResult?.price_targets?.analyst_target||'—')"></span></div>
+            <div class="mrow"><span class="mrow-label">⚪ Entry Zone</span><span class="mrow-val" style="color:var(--gold2)" x-text="'$'+analyzeResult?.price_targets?.entry_zone_low+' – $'+analyzeResult?.price_targets?.entry_zone_high"></span></div>
+            <div class="mrow"><span class="mrow-label">🔴 Stop Loss</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+analyzeResult?.price_targets?.stop_loss"></span></div>
+            <div class="mrow"><span class="mrow-label">🐻 Bear Target</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+analyzeResult?.price_targets?.bear_target+' ('+analyzeResult?.price_targets?.downside_pct+'%)'"></span></div>
+            <div class="mrow"><span class="mrow-label">Risk / Reward</span><span class="mrow-val" x-text="(analyzeResult?.risk?.risk_reward_ratio||0)+'x'"></span></div>
+            <div class="mrow"><span class="mrow-label">Position Size</span><span class="mrow-val" x-text="(analyzeResult?.risk?.suggested_position_size_pct||0)+'% of portfolio'"></span></div>
+          </div>
+        </div>
+
+        <!-- Fundamentals -->
+        <div class="sec-label">Fundamentals</div>
+        <div class="card" style="margin:0 0 12px">
+          <div class="metric-list">
+            <div class="mrow"><span class="mrow-label">Forward P/E</span><span class="mrow-val" x-text="analyzeResult?.fundamentals?.forward_pe?.toFixed(1)+'x'||'—'"></span></div>
+            <div class="mrow"><span class="mrow-label">Revenue CAGR (5yr)</span>
+              <span class="mrow-val" :style="'color:'+(analyzeResult?.fundamentals?.revenue_growth_5yr>=0?'var(--green)':'var(--red)')"
+                x-text="(analyzeResult?.fundamentals?.revenue_growth_5yr||0).toFixed(1)+'%'"></span></div>
+            <div class="mrow"><span class="mrow-label">Debt / Equity</span><span class="mrow-val" x-text="(analyzeResult?.fundamentals?.debt_to_equity||0).toFixed(2)+'x'"></span></div>
+            <div class="mrow"><span class="mrow-label">Dividend Yield</span><span class="mrow-val" x-text="(analyzeResult?.fundamentals?.dividend_yield||0).toFixed(2)+'%'"></span></div>
+            <div class="mrow">
+              <span class="mrow-label">Div Sustainability</span>
+              <span class="mrow-val">
+                <div class="mini-bar"><div class="mini-fill" :style="'width:'+(analyzeResult?.fundamentals?.dividend_sustainability||0)+'%;background:var(--green)'"></div></div>
+                <span x-text="(analyzeResult?.fundamentals?.dividend_sustainability||0)+'/100'"></span>
+              </span>
+            </div>
+            <div class="mrow">
+              <span class="mrow-label">Moat Rating</span>
+              <span class="mrow-val">
+                <div class="mini-bar"><div class="mini-fill" :style="'width:'+((analyzeResult?.fundamentals?.moat_rating||0)*10)+'%;background:var(--gold)'"></div></div>
+                <span x-text="(analyzeResult?.fundamentals?.moat_rating||0)+'/10'"></span>
+              </span>
+            </div>
+            <div class="mrow"><span class="mrow-label">ROE</span><span class="mrow-val" x-text="(analyzeResult?.fundamentals?.roe||0).toFixed(1)+'%'"></span></div>
+            <div class="mrow"><span class="mrow-label">Profit Margin</span><span class="mrow-val" x-text="(analyzeResult?.fundamentals?.profit_margin||0).toFixed(1)+'%'"></span></div>
+            <div class="mrow"><span class="mrow-label">Beta</span><span class="mrow-val" x-text="analyzeResult?.fundamentals?.beta"></span></div>
+            <div class="mrow"><span class="mrow-label">Market Cap</span><span class="mrow-val" x-text="fmtMcap(analyzeResult?.fundamentals?.market_cap)"></span></div>
+          </div>
+        </div>
+
+        <!-- Risk -->
+        <div class="sec-label">Risk Assessment</div>
+        <div class="card" style="margin:0 0 12px">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <div>
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Risk Score</div>
+                <div style="font-size:26px;font-weight:800;"
+                     :style="'color:'+riskColor(analyzeResult?.risk?.risk_score)"
+                     x-text="analyzeResult?.risk?.risk_score+'/10'"></div>
+                <div style="font-size:11px;color:var(--muted)" x-text="analyzeResult?.risk?.risk_label"></div>
+              </div>
+              <div class="risk-dots">
+                <template x-for="i in 10" :key="i">
+                  <div class="rdot" :class="riskDot(i, analyzeResult?.risk?.risk_score)"></div>
+                </template>
+              </div>
+            </div>
+            <template x-for="f in (analyzeResult?.risk?.risk_factors||[])" :key="f">
+              <div style="font-size:12px;color:var(--muted);padding:3px 0">• <span x-text="f"></span></div>
+            </template>
+          </div>
+        </div>
+
+        <!-- Sub-scores radar -->
+        <div class="sec-label">Agent Sub-Scores</div>
+        <div class="card" style="margin:0 0 12px">
+          <div class="radar-wrap">
+            <canvas id="radarChart"></canvas>
+          </div>
+        </div>
+
+        <!-- News -->
+        <div class="sec-label" x-show="analyzeResult?.news?.length">News & Sentiment</div>
+        <div class="card" x-show="analyzeResult?.news?.length" style="margin:0 0 12px">
+          <template x-for="n in (analyzeResult?.news||[])" :key="n.title">
+            <div class="news-item">
+              <div class="news-title" x-text="n.title"></div>
+              <div class="news-foot">
+                <span x-text="n.source"></span>
+                <span class="sent-chip" :class="n.sentiment>0.1?'sent-pos':n.sentiment<-0.1?'sent-neg':'sent-neu'"
+                      x-text="n.sentiment>0.1?'▲ Bullish':n.sentiment<-0.1?'▼ Bearish':'— Neutral'"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ AGENTS PAGE ═══ -->
+    <div class="page" :class="{active: tab==='agents'}" id="page-agents">
+      <div style="padding:4px 0 14px;">
+        <div style="font-size:18px;font-weight:800;margin-bottom:4px;">🤖 Agent Pipeline</div>
+        <div style="font-size:12px;color:var(--muted);">5 specialized AI agents work sequentially on every stock.</div>
+      </div>
+
+      <div class="agent-card" style="border-color:#1e3a5f;">
+        <div class="agent-num">Agent 1 — Information Gathering</div>
+        <div class="agent-name">Data Collection</div>
+        <div class="agent-sub">
+          <div><span class="agent-dot"></span>News Analyst — keyword sentiment scoring</div>
+          <div><span class="agent-dot"></span>Social Media Analyst — trend & volume</div>
+          <div><span class="agent-dot"></span>Market Analyst — price, RSI, MA50/200</div>
+          <div><span class="agent-dot"></span>Fundamental Analyst — P/E, D/E, moat, ROE</div>
+        </div>
+      </div>
+      <div class="agent-arrow">↓</div>
+      <div class="agent-card" style="border-color:#1a3a2a;">
+        <div class="agent-num">Agent 2 — Research</div>
+        <div class="agent-name">Classification & Scoring</div>
+        <div class="agent-sub">
+          <div><span class="agent-dot"></span>Weighs 6 signal dimensions (30% fundamentals)</div>
+          <div><span class="agent-dot"></span>Computes composite score (0–100%)</div>
+          <div><span class="agent-dot"></span>Classifies: Strong Bull / Bull / Neutral / Bear</div>
+          <div><span class="agent-dot"></span>Derives bull, bear & analyst price targets</div>
+        </div>
+      </div>
+      <div class="agent-arrow">↓</div>
+      <div class="agent-card" style="border-color:#3a2200;">
+        <div class="agent-num">Agent 3 — Risk Management</div>
+        <div class="agent-name">Risk Quantification</div>
+        <div class="agent-sub">
+          <div><span class="agent-dot"></span>1–10 risk score (beta, leverage, RSI, valuation)</div>
+          <div><span class="agent-dot"></span>Half-Kelly position sizing</div>
+          <div><span class="agent-dot"></span>Stop-loss & max drawdown estimate</div>
+          <div><span class="agent-dot"></span>Risk/reward ratio</div>
+        </div>
+      </div>
+      <div class="agent-arrow">↓</div>
+      <div class="agent-card" style="border-color:#1a1a3a;">
+        <div class="agent-num">Agent 4 — Execution</div>
+        <div class="agent-name">Trade Signal Generation</div>
+        <div class="agent-sub">
+          <div><span class="agent-dot"></span>BUY / SELL / HOLD with confidence %</div>
+          <div><span class="agent-dot"></span>Entry zone (2–5% below current)</div>
+          <div><span class="agent-dot"></span>Timeframe recommendation</div>
+          <div><span class="agent-dot"></span>Rationale bullets</div>
+        </div>
+      </div>
+      <div class="agent-arrow">↓</div>
+      <div class="agent-card" style="border-color:#2a1a3a;">
+        <div class="agent-num">Agent 5 — Feedback Loop</div>
+        <div class="agent-name">Model Refinement</div>
+        <div class="agent-sub">
+          <div><span class="agent-dot"></span>Records every signal with entry/target/stop</div>
+          <div><span class="agent-dot"></span>Tracks P&L and win rate on resolved trades</div>
+          <div><span class="agent-dot"></span>Generates refinement signals → feeds back to Agent 1</div>
+          <div><span class="agent-dot"></span>Improves weights as more data accumulates</div>
+        </div>
+      </div>
+
+      <!-- Weights -->
+      <div style="margin-top:16px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">Composite Score Weights</div>
+      <div class="card">
+        <div class="metric-list">
+          <template x-for="[k,v] in Object.entries(weights)" :key="k">
+            <div class="mrow">
+              <span class="mrow-label" x-text="k.replace(/_/g,' ')"></span>
+              <span class="mrow-val">
+                <div class="mini-bar" style="width:80px"><div class="mini-fill" :style="'width:'+v*100*3+'%;background:var(--gold)'"></div></div>
+                <span style="color:var(--gold2);font-weight:700" x-text="(v*100).toFixed(0)+'%'"></span>
+              </span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PERFORMANCE PAGE ═══ -->
+    <div class="page" :class="{active: tab==='perf'}" id="page-perf" x-init="tab==='perf' && loadPerf()">
+
+      <div class="loader" x-show="perfLoading">
+        <div class="spin"></div>
+        <div class="loader-txt">Loading performance data…</div>
+      </div>
+
+      <div x-show="!perfLoading">
+        <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="kpi">
+            <div class="kpi-label">Signals</div>
+            <div class="kpi-val" style="color:var(--blue)" x-text="perf?.performance?.total_signals||0"></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Win Rate</div>
+            <div class="kpi-val" style="color:var(--green)" x-text="(perf?.performance?.win_rate||0)+'%'"></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Avg P&L</div>
+            <div class="kpi-val" :style="'color:'+((perf?.performance?.avg_pnl_pct||0)>=0?'var(--green)':'var(--red)')"
+                 x-text="(perf?.performance?.avg_pnl_pct||0).toFixed(1)+'%'"></div>
+          </div>
+        </div>
+
+        <div class="sec-label">Signal History</div>
+        <div class="card" style="margin:0 0 12px">
+          <template x-for="s in (signals?.signals||[]).slice().reverse().slice(0,30)" :key="s.id">
+            <div class="signal-row">
+              <div style="font-weight:700;font-size:14px;color:var(--gold2);width:50px" x-text="s.ticker"></div>
+              <div class="badge" :class="actionClass(s.action)" x-text="s.action" style="flex-shrink:0"></div>
+              <div style="flex:1;text-align:right;font-size:12px;color:var(--muted)" x-text="'$'+(s.entry_price||'—')+' → $'+(s.target_price||'—')"></div>
+              <div style="width:50px;text-align:right">
+                <span x-show="!s.outcome" style="font-size:11px;color:var(--muted)">Pending</span>
+                <span x-show="s.outcome" :style="'font-size:12px;font-weight:700;color:'+(s.outcome==='WIN'?'var(--green)':'var(--red)')"
+                      x-text="(s.pnl_pct>=0?'+':'')+s.pnl_pct+'%'"></span>
+              </div>
+            </div>
+          </template>
+          <div class="empty" x-show="!signals?.signals?.length">
+            <div class="empty-icon" style="font-size:32px">📋</div>
+            <div class="empty-sub">No signals yet. Screen stocks to generate signals.</div>
+          </div>
+        </div>
+
+        <!-- Refinements -->
+        <div class="sec-label" x-show="perf?.refinements?.adjustments && Object.keys(perf?.refinements?.adjustments||{}).length">Agent 1 Feedback</div>
+        <div class="card" x-show="perf?.refinements?.adjustments && Object.keys(perf?.refinements?.adjustments||{}).length" style="margin:0 0 12px">
+          <div style="padding:12px 16px;font-size:12px;color:var(--muted)" x-text="perf?.refinements?.message"></div>
+          <template x-for="[cls,msg] in Object.entries(perf?.refinements?.adjustments||{})" :key="cls">
+            <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:13px;">
+              <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--card2);color:var(--muted)" x-text="cls"></span>
+              <span style="margin-left:8px;color:var(--text)" x-text="msg"></span>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-wrap -->
+
+  <!-- Stock detail sheet -->
+  <div class="sheet-overlay" :class="{open: sheetOpen}" @click="closeSheet()"></div>
+  <div class="sheet" :class="{open: sheetOpen}" id="detailSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header" x-show="selected">
+      <div>
+        <div style="font-size:24px;font-weight:800;color:var(--gold2)" x-text="selected?.ticker"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px" x-text="(selected?.fundamentals?.sector||'') + ' · ' + (selected?.fundamentals?.industry||'')"></div>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+          <span class="badge" :class="actionClass(selected?.summary?.action)" x-text="selected?.summary?.action"></span>
+          <span style="font-size:12px;color:var(--muted)" x-text="selected?.summary?.confidence+'% confidence'"></span>
+        </div>
+      </div>
+      <button class="sheet-close" @click="closeSheet()">✕</button>
+    </div>
+
+    <!-- Analyst Hero in sheet -->
+    <div class="sec-label">Analyst Consensus</div>
+    <div class="analyst-hero" style="margin:0 16px 12px;">
+      <div class="analyst-rec">Wall Street Recommendation</div>
+      <div class="analyst-val" x-text="selected?.fundamentals?.analyst_recommendation || '—'"></div>
+      <div class="analyst-row">
+        <div class="analyst-item">
+          <div class="analyst-item-label">Analyst Target</div>
+          <div class="analyst-item-val" style="color:var(--cyan)" x-text="'$'+(selected?.price_targets?.analyst_target||'—')"></div>
+        </div>
+        <div class="analyst-item">
+          <div class="analyst-item-label">Current</div>
+          <div class="analyst-item-val" x-text="'$'+(selected?.price_targets?.current||'—')"></div>
+        </div>
+        <div class="analyst-item">
+          <div class="analyst-item-label">Upside</div>
+          <div class="analyst-item-val"
+               :style="'color:'+((selected?.price_targets?.upside_pct||0)>=0?'var(--green)':'var(--red)')"
+               x-text="(selected?.price_targets?.upside_pct>=0?'+':'')+selected?.price_targets?.upside_pct+'%'"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price levels -->
+    <div class="sec-label">Trade Levels</div>
+    <div class="metric-list">
+      <div class="mrow"><span class="mrow-label">🟢 Bull Target</span><span class="mrow-val" style="color:var(--green)" x-text="'$'+(selected?.price_targets?.bull_target||'—')+' (+'+selected?.price_targets?.upside_pct+'%)'"></span></div>
+      <div class="mrow"><span class="mrow-label">⚪ Entry Zone</span><span class="mrow-val" style="color:var(--gold2)" x-text="'$'+(selected?.price_targets?.entry_zone_low||'—')+' – $'+(selected?.price_targets?.entry_zone_high||'—')"></span></div>
+      <div class="mrow"><span class="mrow-label">🔴 Stop Loss</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+(selected?.price_targets?.stop_loss||'—')"></span></div>
+      <div class="mrow"><span class="mrow-label">🐻 Bear Target</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+(selected?.price_targets?.bear_target||'—')+'('+selected?.price_targets?.downside_pct+'%)'"></span></div>
+      <div class="mrow"><span class="mrow-label">Risk / Reward</span><span class="mrow-val" x-text="(selected?.risk?.risk_reward_ratio||0)+'x'"></span></div>
+      <div class="mrow"><span class="mrow-label">Position Size</span><span class="mrow-val" x-text="(selected?.risk?.suggested_position_size_pct||0)+'% of portfolio'"></span></div>
+    </div>
+
+    <!-- Fundamentals -->
+    <div class="sec-label">Key Metrics</div>
+    <div class="metric-list">
+      <div class="mrow"><span class="mrow-label">Forward P/E</span><span class="mrow-val" x-text="selected?.fundamentals?.forward_pe?.toFixed(1)+'x'||'—'"></span></div>
+      <div class="mrow"><span class="mrow-label">Revenue CAGR 5yr</span><span class="mrow-val" :style="'color:'+(selected?.fundamentals?.revenue_growth_5yr>=0?'var(--green)':'var(--red)')" x-text="(selected?.fundamentals?.revenue_growth_5yr||0).toFixed(1)+'%'"></span></div>
+      <div class="mrow"><span class="mrow-label">Debt / Equity</span><span class="mrow-val" x-text="(selected?.fundamentals?.debt_to_equity||0).toFixed(2)+'x'"></span></div>
+      <div class="mrow">
+        <span class="mrow-label">Dividend Sustainability</span>
+        <span class="mrow-val">
+          <div class="mini-bar"><div class="mini-fill" :style="'width:'+(selected?.fundamentals?.dividend_sustainability||0)+'%;background:var(--green)'"></div></div>
+          <span x-text="(selected?.fundamentals?.dividend_sustainability||0)+'/100'"></span>
+        </span>
+      </div>
+      <div class="mrow">
+        <span class="mrow-label">Competitive Moat</span>
+        <span class="mrow-val">
+          <div class="mini-bar"><div class="mini-fill" :style="'width:'+((selected?.fundamentals?.moat_rating||0)*10)+'%;background:var(--gold)'"></div></div>
+          <span x-text="(selected?.fundamentals?.moat_rating||0)+'/10'"></span>
+        </span>
+      </div>
+      <div class="mrow"><span class="mrow-label">ROE</span><span class="mrow-val" x-text="(selected?.fundamentals?.roe||0).toFixed(1)+'%'"></span></div>
+      <div class="mrow"><span class="mrow-label">Profit Margin</span><span class="mrow-val" x-text="(selected?.fundamentals?.profit_margin||0).toFixed(1)+'%'"></span></div>
+      <div class="mrow"><span class="mrow-label">Beta</span><span class="mrow-val" x-text="selected?.fundamentals?.beta"></span></div>
+    </div>
+
+    <!-- Risk -->
+    <div class="sec-label">Risk</div>
+    <div style="padding:0 16px 12px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <div style="font-size:28px;font-weight:800;" :style="'color:'+riskColor(selected?.risk?.risk_score)" x-text="(selected?.risk?.risk_score||0)+'/10'"></div>
+        <div>
+          <div style="font-size:12px;font-weight:700" x-text="selected?.risk?.risk_label"></div>
+          <div class="risk-dots" style="margin-top:4px;">
+            <template x-for="i in 10" :key="i">
+              <div class="rdot" :class="riskDot(i, selected?.risk?.risk_score)"></div>
+            </template>
+          </div>
+        </div>
+      </div>
+      <template x-for="f in (selected?.risk?.risk_factors||[])" :key="f">
+        <div style="font-size:12px;color:var(--muted);padding:2px 0">• <span x-text="f"></span></div>
+      </template>
+    </div>
+
+    <!-- Technical -->
+    <div class="sec-label">Technical Signals</div>
+    <div class="metric-list">
+      <div class="mrow"><span class="mrow-label">Signal</span><span class="mrow-val" x-text="selected?.market?.signal"></span></div>
+      <div class="mrow"><span class="mrow-label">RSI (14)</span><span class="mrow-val" :style="'color:'+(selected?.market?.rsi>70?'var(--red)':selected?.market?.rsi<30?'var(--green)':'var(--text)')" x-text="(selected?.market?.rsi||0).toFixed(1)"></span></div>
+      <div class="mrow"><span class="mrow-label">MA50</span><span class="mrow-val" x-text="'$'+(selected?.market?.ma50||'—')"></span></div>
+      <div class="mrow"><span class="mrow-label">1M Return</span><span class="mrow-val" :style="'color:'+(selected?.market?.return_1m>=0?'var(--green)':'var(--red)')" x-text="(selected?.market?.return_1m>=0?'+':'')+selected?.market?.return_1m+'%'"></span></div>
+      <div class="mrow"><span class="mrow-label">3M Return</span><span class="mrow-val" :style="'color:'+(selected?.market?.return_3m>=0?'var(--green)':'var(--red)')" x-text="(selected?.market?.return_3m>=0?'+':'')+selected?.market?.return_3m+'%'"></span></div>
+      <div class="mrow"><span class="mrow-label">Volume vs Avg</span><span class="mrow-val" x-text="selected?.market?.volume_ratio+'x'"></span></div>
+      <div class="mrow"><span class="mrow-label">52W Range</span><span class="mrow-val" style="font-size:12px;" x-text="'$'+selected?.market?.low_52w+' – $'+selected?.market?.high_52w"></span></div>
+    </div>
+
+    <!-- Rationale -->
+    <div class="sec-label">Trade Rationale</div>
+    <div style="padding:0 16px 12px;">
+      <template x-for="r in (selected?.execution?.rationale||[])" :key="r">
+        <div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);">• <span x-text="r"></span></div>
+      </template>
+    </div>
+
+    <!-- News -->
+    <div class="sec-label" x-show="selected?.news?.length">News</div>
+    <div x-show="selected?.news?.length">
+      <template x-for="n in (selected?.news||[])" :key="n.title">
+        <div class="news-item">
+          <div class="news-title" x-text="n.title"></div>
+          <div class="news-foot">
+            <span x-text="n.source"></span>
+            <span class="sent-chip" :class="n.sentiment>0.1?'sent-pos':n.sentiment<-0.1?'sent-neg':'sent-neu'"
+                  x-text="n.sentiment>0.1?'▲ Bullish':n.sentiment<-0.1?'▼ Bearish':'— Neutral'"></span>
+          </div>
+        </div>
+      </template>
+    </div>
+
+  </div><!-- /sheet -->
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item" :class="{active: tab==='dashboard'}" @click="tab='dashboard'">
+      <span class="icon">📊</span><span>Dashboard</span>
+    </button>
+    <button class="nav-item" :class="{active: tab==='analyze'}" @click="tab='analyze'">
+      <span class="icon">🔍</span><span>Analyze</span>
+    </button>
+    <button class="nav-item" :class="{active: tab==='agents'}" @click="tab='agents'">
+      <span class="icon">🤖</span><span>Agents</span>
+    </button>
+    <button class="nav-item" :class="{active: tab==='perf'}" @click="tab='perf';loadPerf()">
+      <span class="icon">📈</span><span>Performance</span>
+    </button>
+  </nav>
+
+  <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/sw.js').catch(()=>{});
+    }
+
+    function app() {
+      return {
+        tab: 'dashboard',
+        loading: false, analyzing: false, perfLoading: false,
+        stocks: [], selected: null, sheetOpen: false,
+        filterClass: '', searchTicker: '', analyzeResult: null, analyzeError: '',
+        perf: null, signals: null, lastUpdated: '', screenCount: 20,
+        radarChart: null,
+        filters: [
+          {val:'',         label:'All',         color:'#c9a84c'},
+          {val:'STRONG_BULL', label:'Strong Bull', color:'#22c55e'},
+          {val:'BULL',     label:'Bull',         color:'#4ade80'},
+          {val:'NEUTRAL',  label:'Neutral',      color:'#94a3b8'},
+          {val:'BEAR',     label:'Bear',         color:'#f97316'},
+          {val:'STRONG_BEAR', label:'Strong Bear', color:'#ef4444'},
+        ],
+        weights: {
+          fundamental_quality: 0.30,
+          technical_signal:    0.20,
+          momentum:            0.15,
+          news_sentiment:      0.15,
+          social_sentiment:    0.10,
+          valuation:           0.10,
+        },
+
+        get kpis() {
+          const s = this.stocks;
+          if (!s.length) return {strongBuy:0,bullish:0,total:0,avgRisk:'—'};
+          return {
+            strongBuy:  s.filter(x=>x.summary?.action==='STRONG BUY').length,
+            bullish:    s.filter(x=>['BULL','STRONG_BULL'].includes(x.summary?.classification)).length,
+            total:      s.length,
+            avgRisk:    (s.reduce((a,x)=>a+(x.risk?.risk_score||0),0)/s.length).toFixed(1),
+          };
+        },
+        get filteredStocks() {
+          return this.filterClass ? this.stocks.filter(s=>s.summary?.classification===this.filterClass) : this.stocks;
+        },
+
+        // Wrap fetch to bypass ngrok browser-warning on all API calls
+        apiFetch(url, opts={}) {
+          const headers = Object.assign({'ngrok-skip-browser-warning': '1'}, opts.headers||{});
+          return fetch(url, Object.assign({}, opts, {headers}));
+        },
+
+        init() {},
+
+        async screenAll() {
+          this.loading = true; this.selected = null; this.sheetOpen = false;
+          try {
+            const r = await this.apiFetch('/api/screen/top');
+            const d = await r.json();
+            this.stocks = d.all || [];
+            this.lastUpdated = 'Updated ' + new Date().toLocaleTimeString();
+          } catch(e) { console.error(e); }
+          finally { this.loading = false; }
+        },
+
+        async analyzeTicker() {
+          if (!this.searchTicker.trim()) return;
+          this.analyzing = true; this.analyzeResult = null; this.analyzeError = '';
+          try {
+            const r = await this.apiFetch('/api/analyze/' + this.searchTicker.trim().toUpperCase());
+            if (!r.ok) throw new Error(await r.text());
+            this.analyzeResult = await r.json();
+            this.$nextTick(() => this.drawRadar());
+          } catch(e) { this.analyzeError = 'Error: ' + e.message; }
+          finally { this.analyzing = false; }
+        },
+
+        async loadPerf() {
+          if (this.perf) return;
+          this.perfLoading = true;
+          try {
+            const [p,s] = await Promise.all([
+              this.apiFetch('/api/performance').then(r=>r.json()),
+              this.apiFetch('/api/signals').then(r=>r.json()),
+            ]);
+            this.perf = p; this.signals = s;
+          } catch(e) {}
+          finally { this.perfLoading = false; }
+        },
+
+        openDetail(s) {
+          this.selected = s; this.sheetOpen = true;
+          document.getElementById('detailSheet').scrollTop = 0;
+        },
+        closeSheet() { this.sheetOpen = false; },
+
+        drawRadar() {
+          const canvas = document.getElementById('radarChart');
+          if (!canvas || !this.analyzeResult) return;
+          if (this.radarChart) this.radarChart.destroy();
+          const sub = this.analyzeResult?.research?.sub_scores || {};
+          const labels = Object.keys(sub).map(k=>k.replace(/_/g,' ').toUpperCase());
+          const data   = Object.values(sub).map(v=>Math.round(v*100));
+          this.radarChart = new Chart(canvas, {
+            type: 'radar',
+            data: { labels, datasets: [{
+              label: this.analyzeResult.ticker, data,
+              backgroundColor: 'rgba(201,168,76,.15)',
+              borderColor: '#c9a84c', borderWidth: 2,
+              pointBackgroundColor: '#c9a84c',
+            }]},
+            options: {
+              scales: { r: {
+                min:0, max:100,
+                ticks: { color:'#64748b', stepSize:25, font:{size:9} },
+                grid: { color:'#1e2d45' },
+                pointLabels: { color:'#94a3b8', font:{size:9} },
+              }},
+              plugins: { legend: { display: false } },
+            }
+          });
+        },
+
+        actionClass(action) {
+          if (!action) return 'badge-HOLD';
+          return 'badge-' + action.replace(/ /g,'-').replace('/','').replace('--','-');
+        },
+        avatarColor(cls) {
+          const m = {STRONG_BULL:'#166534',BULL:'#15803d',NEUTRAL:'#334155',BEAR:'#9a3412',STRONG_BEAR:'#991b1b'};
+          return m[cls] || '#334155';
+        },
+        scoreColor(s) {
+          if (!s) return '#94a3b8';
+          if (s>=.65) return '#22c55e'; if (s>=.55) return '#4ade80';
+          if (s<=.35) return '#ef4444'; if (s<=.45) return '#f97316';
+          return '#94a3b8';
+        },
+        riskColor(s) {
+          if (!s) return '#94a3b8';
+          if (s<=3) return '#22c55e'; if (s<=5) return '#facc15';
+          if (s<=7) return '#f97316'; return '#ef4444';
+        },
+        riskDot(i, score) {
+          if (!score || i > score) return '';
+          if (score<=3) return 'g'; if (score<=6) return 'y'; return 'r';
+        },
+        fmtMcap(v) {
+          if (!v) return '—';
+          if (v>=1e12) return '$'+(v/1e12).toFixed(2)+'T';
+          if (v>=1e9)  return '$'+(v/1e9).toFixed(1)+'B';
+          return '$'+(v/1e6).toFixed(0)+'M';
+        },
+      };
+    }
+  </script>
+</body>
+</html>
