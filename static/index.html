@@ -31,7 +31,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Inter', sans-serif; overscroll-behavior: none; }
 
-    /* ── Top bar ── */
+    /* â”€â”€ Top bar â”€â”€ */
     .topbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       height: 56px; padding: 0 16px;
@@ -58,7 +58,7 @@
     .pill-gold  { background: var(--gold); color: #000; }
     .pill-ghost { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
 
-    /* ── Scroll area ── */
+    /* â”€â”€ Scroll area â”€â”€ */
     .page-wrap {
       padding-top: calc(56px + env(safe-area-inset-top, 0px));
       padding-bottom: calc(var(--nav-h) + var(--safe-b) + 16px);
@@ -67,7 +67,7 @@
     .page { display: none; padding: 16px; }
     .page.active { display: block; }
 
-    /* ── Bottom nav ── */
+    /* â”€â”€ Bottom nav â”€â”€ */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
       height: calc(var(--nav-h) + var(--safe-b));
@@ -85,7 +85,7 @@
     .nav-item.active { color: var(--gold2); }
     .nav-item .icon { font-size: 20px; }
 
-    /* ── Cards ── */
+    /* â”€â”€ Cards â”€â”€ */
     .card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 16px; overflow: hidden; margin-bottom: 12px;
@@ -98,7 +98,7 @@
     .card-title { font-size: 13px; font-weight: 700; }
     .card-body  { padding: 16px; }
 
-    /* ── KPI row ── */
+    /* â”€â”€ KPI row â”€â”€ */
     .kpi-row {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 10px; margin-bottom: 14px;
@@ -111,7 +111,7 @@
     .kpi-val   { font-size: 22px; font-weight: 800; line-height: 1; }
     .kpi-sub   { font-size: 10px; color: var(--muted); margin-top: 4px; }
 
-    /* ── Stock row ── */
+    /* â”€â”€ Stock row â”€â”€ */
     .stock-row {
       display: flex; align-items: center; padding: 14px 16px;
       border-bottom: 1px solid rgba(30,45,69,.5); cursor: pointer;
@@ -131,7 +131,7 @@
     .stock-price  { font-size: 15px; font-weight: 700; }
     .stock-change { font-size: 11px; margin-top: 2px; }
 
-    /* ── Action badge ── */
+    /* â”€â”€ Action badge â”€â”€ */
     .badge {
       display: inline-flex; align-items: center;
       padding: 3px 9px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: .3px;
@@ -142,11 +142,11 @@
     .badge-SELL        { background: #450a0a; color: #fca5a5; border: 1px solid #991b1b; }
     .badge-STRONG-SELL { background: #450a0a; color: #ef4444; border: 1px solid #dc2626; }
 
-    /* ── Score bar ── */
+    /* â”€â”€ Score bar â”€â”€ */
     .score-track { height: 4px; background: var(--card2); border-radius: 2px; margin-top: 5px; }
     .score-fill  { height: 100%; border-radius: 2px; }
 
-    /* ── Detail sheet (slide-up) ── */
+    /* â”€â”€ Detail sheet (slide-up) â”€â”€ */
     .sheet-overlay {
       position: fixed; inset: 0; z-index: 300;
       background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
@@ -177,7 +177,7 @@
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
 
-    /* ── Analyst box (hero) ── */
+    /* â”€â”€ Analyst box (hero) â”€â”€ */
     .analyst-hero {
       margin: 0 16px 12px;
       background: linear-gradient(135deg, #0d1f38, #0f2744);
@@ -190,7 +190,7 @@
     .analyst-item-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
     .analyst-item-val   { font-size: 17px; font-weight: 700; margin-top: 3px; }
 
-    /* ── Metrics list ── */
+    /* â”€â”€ Metrics list â”€â”€ */
     .metric-list { padding: 0 16px; }
     .mrow {
       display: flex; align-items: center; justify-content: space-between;
@@ -203,7 +203,7 @@
     .mini-bar   { width: 50px; height: 5px; background: var(--card2); border-radius: 3px; overflow: hidden; }
     .mini-fill  { height: 100%; border-radius: 3px; }
 
-    /* ── Price target ruler ── */
+    /* â”€â”€ Price target ruler â”€â”€ */
     .pt-ruler { margin: 0 16px 16px; position: relative; }
     .pt-track {
       height: 8px; border-radius: 4px; position: relative;
@@ -223,14 +223,14 @@
       transform: translateX(-50%); white-space: nowrap; color: var(--muted);
     }
 
-    /* ── Risk dots ── */
+    /* â”€â”€ Risk dots â”€â”€ */
     .risk-dots { display: flex; gap: 4px; }
     .rdot { width: 12px; height: 12px; border-radius: 3px; background: var(--card2); }
     .rdot.g { background: var(--green); }
     .rdot.y { background: #facc15; }
     .rdot.r { background: var(--red); }
 
-    /* ── News item ── */
+    /* â”€â”€ News item â”€â”€ */
     .news-item { padding: 12px 16px; border-bottom: 1px solid rgba(30,45,69,.5); }
     .news-item:last-child { border-bottom: none; }
     .news-title { font-size: 13px; line-height: 1.45; }
@@ -240,14 +240,14 @@
     .sent-neg   { background: #450a0a; color: #fca5a5; }
     .sent-neu   { background: #1c1917; color: #a8a29e; }
 
-    /* ── Section label ── */
+    /* â”€â”€ Section label â”€â”€ */
     .sec-label {
       font-size: 10px; font-weight: 700; text-transform: uppercase;
       letter-spacing: .8px; color: var(--muted);
       padding: 16px 16px 6px;
     }
 
-    /* ── Loader ── */
+    /* â”€â”€ Loader â”€â”€ */
     .loader {
       display: flex; flex-direction: column; align-items: center;
       justify-content: center; gap: 14px; padding: 60px 20px;
@@ -260,13 +260,13 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .loader-txt { font-size: 13px; color: var(--muted); text-align: center; }
 
-    /* ── Empty state ── */
+    /* â”€â”€ Empty state â”€â”€ */
     .empty { padding: 60px 24px; text-align: center; color: var(--muted); }
     .empty-icon { font-size: 48px; margin-bottom: 12px; }
     .empty-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
     .empty-sub   { font-size: 13px; line-height: 1.5; }
 
-    /* ── Analyze search ── */
+    /* â”€â”€ Analyze search â”€â”€ */
     .search-wrap { padding: 12px 16px; display: flex; gap: 10px; }
     .ticker-inp {
       flex: 1; background: var(--card2); border: 1px solid var(--border);
@@ -281,7 +281,7 @@
       cursor: pointer;
     }
 
-    /* ── Agent pipeline ── */
+    /* â”€â”€ Agent pipeline â”€â”€ */
     .agent-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 14px; padding: 16px; margin-bottom: 10px;
@@ -292,7 +292,7 @@
     .agent-dot  { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 5px; vertical-align: middle; }
     .agent-arrow { text-align: center; color: var(--gold); font-size: 20px; margin: -4px 0; }
 
-    /* ── Perf tab ── */
+    /* â”€â”€ Perf tab â”€â”€ */
     .perf-big { font-size: 40px; font-weight: 800; line-height: 1; }
     .signal-row { padding: 12px 16px; border-bottom: 1px solid rgba(30,45,69,.5); display: flex; align-items: center; gap: 12px; }
     .signal-row:last-child { border-bottom: none; }
@@ -309,23 +309,23 @@
   <!-- Top bar -->
   <div class="topbar">
     <div class="topbar-left">
-      <div class="logo-chip">S∧</div>
+      <div class="logo-chip">Sâˆ§</div>
       <div>
         <div class="topbar-title">SomAI Vantage</div>
-        <div class="topbar-sub" x-text="lastUpdated || '5-Agent Intelligence Platform'"></div>
+        <div class="topbar-sub" x-text="lastUpdated || 'somai-vantage.onrender.com'"></div>
       </div>
     </div>
     <div class="topbar-right">
       <button class="pill-btn pill-gold" @click="tab==='dashboard' ? screenAll() : analyzeTicker()" :disabled="loading||analyzing">
-        <span x-show="!loading && !analyzing" x-text="tab==='analyze' ? 'Run' : '⟳ Screen'"></span>
-        <span x-show="loading||analyzing">…</span>
+        <span x-show="!loading && !analyzing" x-text="tab==='analyze' ? 'Run' : 'âŸ³ Screen'"></span>
+        <span x-show="loading||analyzing">â€¦</span>
       </button>
     </div>
   </div>
 
   <div class="page-wrap">
 
-    <!-- ═══ DASHBOARD PAGE ═══ -->
+    <!-- â•â•â• DASHBOARD PAGE â•â•â• -->
     <div class="page" :class="{active: tab==='dashboard'}" id="page-dashboard">
 
       <!-- KPIs -->
@@ -360,7 +360,7 @@
       <!-- Loader -->
       <div class="loader" x-show="loading">
         <div class="spin"></div>
-        <div class="loader-txt">Running 5-agent analysis on <span x-text="screenCount"></span> stocks…<br>Fetching live prices, fundamentals & news</div>
+        <div class="loader-txt">Running 5-agent analysis on <span x-text="screenCount"></span> stocksâ€¦<br>Fetching live prices, fundamentals & news</div>
       </div>
 
       <!-- Stock list -->
@@ -375,13 +375,13 @@
                 <span class="stock-ticker" x-text="s.ticker"></span>
                 <span class="badge" :class="actionClass(s.summary?.action)" x-text="s.summary?.action"></span>
               </div>
-              <div class="stock-meta" x-text="(s.fundamentals?.sector||'') + ' · ' + (s.fundamentals?.analyst_recommendation||'') + ' analyst rec'"></div>
+              <div class="stock-meta" x-text="(s.fundamentals?.sector||'') + ' Â· ' + (s.fundamentals?.analyst_recommendation||'') + ' analyst rec'"></div>
               <div class="score-track" style="width:100px">
                 <div class="score-fill" :style="'width:'+(s.summary?.composite_score*100)+'%;background:'+scoreColor(s.summary?.composite_score)"></div>
               </div>
             </div>
             <div class="stock-right">
-              <div class="stock-price" x-text="'$'+(s.price_targets?.current||'—')"></div>
+              <div class="stock-price" x-text="'$'+(s.price_targets?.current||'â€”')"></div>
               <div class="stock-change"
                    :style="'color:'+(s.market?.return_1m>=0?'var(--green)':'var(--red)')"
                    x-text="(s.market?.return_1m>=0?'+':'')+s.market?.return_1m+'% 1M'"></div>
@@ -393,21 +393,21 @@
 
       <!-- Empty state -->
       <div class="empty" x-show="!loading && filteredStocks.length === 0">
-        <div class="empty-icon">📊</div>
+        <div class="empty-icon">ðŸ“Š</div>
         <div class="empty-title">No stocks loaded yet</div>
-        <div class="empty-sub">Tap <strong style="color:var(--gold2)">⟳ Screen</strong> to run the 5-agent pipeline across 20 top stocks.</div>
+        <div class="empty-sub">Tap <strong style="color:var(--gold2)">âŸ³ Screen</strong> to run the 5-agent pipeline across 20 top stocks.</div>
       </div>
 
     </div>
 
-    <!-- ═══ ANALYZE PAGE ═══ -->
+    <!-- â•â•â• ANALYZE PAGE â•â•â• -->
     <div class="page" :class="{active: tab==='analyze'}" id="page-analyze">
       <div class="search-wrap">
-        <input class="ticker-inp" x-model="searchTicker" placeholder="NVDA, TSLA, AAPL…"
+        <input class="ticker-inp" x-model="searchTicker" placeholder="NVDA, TSLA, AAPLâ€¦"
                @keyup.enter="analyzeTicker()" maxlength="10" autocomplete="off" autocorrect="off"/>
         <button class="go-btn" @click="analyzeTicker()" :disabled="analyzing">
           <span x-show="!analyzing">GO</span>
-          <span x-show="analyzing">…</span>
+          <span x-show="analyzing">â€¦</span>
         </button>
       </div>
 
@@ -423,7 +423,7 @@
 
       <div class="loader" x-show="analyzing">
         <div class="spin"></div>
-        <div class="loader-txt">Running 5-agent pipeline on <strong x-text="searchTicker.toUpperCase()" style="color:var(--gold2)"></strong>…</div>
+        <div class="loader-txt">Running 5-agent pipeline on <strong x-text="searchTicker.toUpperCase()" style="color:var(--gold2)"></strong>â€¦</div>
       </div>
 
       <div x-show="analyzeError" style="padding:16px;color:var(--red);font-size:13px;" x-text="analyzeError"></div>
@@ -433,15 +433,15 @@
         <div class="sec-label">Analyst Consensus</div>
         <div class="analyst-hero">
           <div class="analyst-rec">Analyst Recommendation</div>
-          <div class="analyst-val" x-text="analyzeResult?.fundamentals?.analyst_recommendation || '—'"></div>
+          <div class="analyst-val" x-text="analyzeResult?.fundamentals?.analyst_recommendation || 'â€”'"></div>
           <div class="analyst-row">
             <div class="analyst-item">
               <div class="analyst-item-label">Target Price</div>
-              <div class="analyst-item-val" style="color:var(--cyan)" x-text="'$'+(analyzeResult?.price_targets?.analyst_target||'—')"></div>
+              <div class="analyst-item-val" style="color:var(--cyan)" x-text="'$'+(analyzeResult?.price_targets?.analyst_target||'â€”')"></div>
             </div>
             <div class="analyst-item">
               <div class="analyst-item-label">Current</div>
-              <div class="analyst-item-val" x-text="'$'+(analyzeResult?.price_targets?.current||'—')"></div>
+              <div class="analyst-item-val" x-text="'$'+(analyzeResult?.price_targets?.current||'â€”')"></div>
             </div>
             <div class="analyst-item">
               <div class="analyst-item-label">Upside</div>
@@ -459,7 +459,7 @@
             <div>
               <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Agent Decision</div>
               <div style="font-size:22px;font-weight:800;" x-text="analyzeResult?.summary?.action"></div>
-              <div style="font-size:12px;color:var(--muted);margin-top:4px;" x-text="analyzeResult?.summary?.confidence+'% confidence · '+analyzeResult?.summary?.timeframe"></div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;" x-text="analyzeResult?.summary?.confidence+'% confidence Â· '+analyzeResult?.summary?.timeframe"></div>
             </div>
             <div style="text-align:right;">
               <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Composite Score</div>
@@ -475,11 +475,11 @@
         <div class="sec-label">Price Targets & Trade Levels</div>
         <div class="card" style="margin:0 0 12px">
           <div class="metric-list">
-            <div class="mrow"><span class="mrow-label">🟢 Bull Target</span><span class="mrow-val" style="color:var(--green)" x-text="'$'+analyzeResult?.price_targets?.bull_target+' (+'+analyzeResult?.price_targets?.upside_pct+'%)'"></span></div>
-            <div class="mrow"><span class="mrow-label">📊 Analyst Target</span><span class="mrow-val" style="color:var(--cyan)" x-text="'$'+(analyzeResult?.price_targets?.analyst_target||'—')"></span></div>
-            <div class="mrow"><span class="mrow-label">⚪ Entry Zone</span><span class="mrow-val" style="color:var(--gold2)" x-text="'$'+analyzeResult?.price_targets?.entry_zone_low+' – $'+analyzeResult?.price_targets?.entry_zone_high"></span></div>
-            <div class="mrow"><span class="mrow-label">🔴 Stop Loss</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+analyzeResult?.price_targets?.stop_loss"></span></div>
-            <div class="mrow"><span class="mrow-label">🐻 Bear Target</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+analyzeResult?.price_targets?.bear_target+' ('+analyzeResult?.price_targets?.downside_pct+'%)'"></span></div>
+            <div class="mrow"><span class="mrow-label">ðŸŸ¢ Bull Target</span><span class="mrow-val" style="color:var(--green)" x-text="'$'+analyzeResult?.price_targets?.bull_target+' (+'+analyzeResult?.price_targets?.upside_pct+'%)'"></span></div>
+            <div class="mrow"><span class="mrow-label">ðŸ“Š Analyst Target</span><span class="mrow-val" style="color:var(--cyan)" x-text="'$'+(analyzeResult?.price_targets?.analyst_target||'â€”')"></span></div>
+            <div class="mrow"><span class="mrow-label">âšª Entry Zone</span><span class="mrow-val" style="color:var(--gold2)" x-text="'$'+analyzeResult?.price_targets?.entry_zone_low+' â€“ $'+analyzeResult?.price_targets?.entry_zone_high"></span></div>
+            <div class="mrow"><span class="mrow-label">ðŸ”´ Stop Loss</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+analyzeResult?.price_targets?.stop_loss"></span></div>
+            <div class="mrow"><span class="mrow-label">ðŸ» Bear Target</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+analyzeResult?.price_targets?.bear_target+' ('+analyzeResult?.price_targets?.downside_pct+'%)'"></span></div>
             <div class="mrow"><span class="mrow-label">Risk / Reward</span><span class="mrow-val" x-text="(analyzeResult?.risk?.risk_reward_ratio||0)+'x'"></span></div>
             <div class="mrow"><span class="mrow-label">Position Size</span><span class="mrow-val" x-text="(analyzeResult?.risk?.suggested_position_size_pct||0)+'% of portfolio'"></span></div>
           </div>
@@ -489,7 +489,7 @@
         <div class="sec-label">Fundamentals</div>
         <div class="card" style="margin:0 0 12px">
           <div class="metric-list">
-            <div class="mrow"><span class="mrow-label">Forward P/E</span><span class="mrow-val" x-text="analyzeResult?.fundamentals?.forward_pe?.toFixed(1)+'x'||'—'"></span></div>
+            <div class="mrow"><span class="mrow-label">Forward P/E</span><span class="mrow-val" x-text="analyzeResult?.fundamentals?.forward_pe?.toFixed(1)+'x'||'â€”'"></span></div>
             <div class="mrow"><span class="mrow-label">Revenue CAGR (5yr)</span>
               <span class="mrow-val" :style="'color:'+(analyzeResult?.fundamentals?.revenue_growth_5yr>=0?'var(--green)':'var(--red)')"
                 x-text="(analyzeResult?.fundamentals?.revenue_growth_5yr||0).toFixed(1)+'%'"></span></div>
@@ -535,7 +535,7 @@
               </div>
             </div>
             <template x-for="f in (analyzeResult?.risk?.risk_factors||[])" :key="f">
-              <div style="font-size:12px;color:var(--muted);padding:3px 0">• <span x-text="f"></span></div>
+              <div style="font-size:12px;color:var(--muted);padding:3px 0">â€¢ <span x-text="f"></span></div>
             </template>
           </div>
         </div>
@@ -557,7 +557,7 @@
               <div class="news-foot">
                 <span x-text="n.source"></span>
                 <span class="sent-chip" :class="n.sentiment>0.1?'sent-pos':n.sentiment<-0.1?'sent-neg':'sent-neu'"
-                      x-text="n.sentiment>0.1?'▲ Bullish':n.sentiment<-0.1?'▼ Bearish':'— Neutral'"></span>
+                      x-text="n.sentiment>0.1?'â–² Bullish':n.sentiment<-0.1?'â–¼ Bearish':'â€” Neutral'"></span>
               </div>
             </div>
           </template>
@@ -565,64 +565,64 @@
       </div>
     </div>
 
-    <!-- ═══ AGENTS PAGE ═══ -->
+    <!-- â•â•â• AGENTS PAGE â•â•â• -->
     <div class="page" :class="{active: tab==='agents'}" id="page-agents">
       <div style="padding:4px 0 14px;">
-        <div style="font-size:18px;font-weight:800;margin-bottom:4px;">🤖 Agent Pipeline</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:4px;">ðŸ¤– Agent Pipeline</div>
         <div style="font-size:12px;color:var(--muted);">5 specialized AI agents work sequentially on every stock.</div>
       </div>
 
       <div class="agent-card" style="border-color:#1e3a5f;">
-        <div class="agent-num">Agent 1 — Information Gathering</div>
+        <div class="agent-num">Agent 1 â€” Information Gathering</div>
         <div class="agent-name">Data Collection</div>
         <div class="agent-sub">
-          <div><span class="agent-dot"></span>News Analyst — keyword sentiment scoring</div>
-          <div><span class="agent-dot"></span>Social Media Analyst — trend & volume</div>
-          <div><span class="agent-dot"></span>Market Analyst — price, RSI, MA50/200</div>
-          <div><span class="agent-dot"></span>Fundamental Analyst — P/E, D/E, moat, ROE</div>
+          <div><span class="agent-dot"></span>News Analyst â€” keyword sentiment scoring</div>
+          <div><span class="agent-dot"></span>Social Media Analyst â€” trend & volume</div>
+          <div><span class="agent-dot"></span>Market Analyst â€” price, RSI, MA50/200</div>
+          <div><span class="agent-dot"></span>Fundamental Analyst â€” P/E, D/E, moat, ROE</div>
         </div>
       </div>
-      <div class="agent-arrow">↓</div>
+      <div class="agent-arrow">â†“</div>
       <div class="agent-card" style="border-color:#1a3a2a;">
-        <div class="agent-num">Agent 2 — Research</div>
+        <div class="agent-num">Agent 2 â€” Research</div>
         <div class="agent-name">Classification & Scoring</div>
         <div class="agent-sub">
           <div><span class="agent-dot"></span>Weighs 6 signal dimensions (30% fundamentals)</div>
-          <div><span class="agent-dot"></span>Computes composite score (0–100%)</div>
+          <div><span class="agent-dot"></span>Computes composite score (0â€“100%)</div>
           <div><span class="agent-dot"></span>Classifies: Strong Bull / Bull / Neutral / Bear</div>
           <div><span class="agent-dot"></span>Derives bull, bear & analyst price targets</div>
         </div>
       </div>
-      <div class="agent-arrow">↓</div>
+      <div class="agent-arrow">â†“</div>
       <div class="agent-card" style="border-color:#3a2200;">
-        <div class="agent-num">Agent 3 — Risk Management</div>
+        <div class="agent-num">Agent 3 â€” Risk Management</div>
         <div class="agent-name">Risk Quantification</div>
         <div class="agent-sub">
-          <div><span class="agent-dot"></span>1–10 risk score (beta, leverage, RSI, valuation)</div>
+          <div><span class="agent-dot"></span>1â€“10 risk score (beta, leverage, RSI, valuation)</div>
           <div><span class="agent-dot"></span>Half-Kelly position sizing</div>
           <div><span class="agent-dot"></span>Stop-loss & max drawdown estimate</div>
           <div><span class="agent-dot"></span>Risk/reward ratio</div>
         </div>
       </div>
-      <div class="agent-arrow">↓</div>
+      <div class="agent-arrow">â†“</div>
       <div class="agent-card" style="border-color:#1a1a3a;">
-        <div class="agent-num">Agent 4 — Execution</div>
+        <div class="agent-num">Agent 4 â€” Execution</div>
         <div class="agent-name">Trade Signal Generation</div>
         <div class="agent-sub">
           <div><span class="agent-dot"></span>BUY / SELL / HOLD with confidence %</div>
-          <div><span class="agent-dot"></span>Entry zone (2–5% below current)</div>
+          <div><span class="agent-dot"></span>Entry zone (2â€“5% below current)</div>
           <div><span class="agent-dot"></span>Timeframe recommendation</div>
           <div><span class="agent-dot"></span>Rationale bullets</div>
         </div>
       </div>
-      <div class="agent-arrow">↓</div>
+      <div class="agent-arrow">â†“</div>
       <div class="agent-card" style="border-color:#2a1a3a;">
-        <div class="agent-num">Agent 5 — Feedback Loop</div>
+        <div class="agent-num">Agent 5 â€” Feedback Loop</div>
         <div class="agent-name">Model Refinement</div>
         <div class="agent-sub">
           <div><span class="agent-dot"></span>Records every signal with entry/target/stop</div>
           <div><span class="agent-dot"></span>Tracks P&L and win rate on resolved trades</div>
-          <div><span class="agent-dot"></span>Generates refinement signals → feeds back to Agent 1</div>
+          <div><span class="agent-dot"></span>Generates refinement signals â†’ feeds back to Agent 1</div>
           <div><span class="agent-dot"></span>Improves weights as more data accumulates</div>
         </div>
       </div>
@@ -644,12 +644,12 @@
       </div>
     </div>
 
-    <!-- ═══ PERFORMANCE PAGE ═══ -->
+    <!-- â•â•â• PERFORMANCE PAGE â•â•â• -->
     <div class="page" :class="{active: tab==='perf'}" id="page-perf" x-init="tab==='perf' && loadPerf()">
 
       <div class="loader" x-show="perfLoading">
         <div class="spin"></div>
-        <div class="loader-txt">Loading performance data…</div>
+        <div class="loader-txt">Loading performance dataâ€¦</div>
       </div>
 
       <div x-show="!perfLoading">
@@ -675,7 +675,7 @@
             <div class="signal-row">
               <div style="font-weight:700;font-size:14px;color:var(--gold2);width:50px" x-text="s.ticker"></div>
               <div class="badge" :class="actionClass(s.action)" x-text="s.action" style="flex-shrink:0"></div>
-              <div style="flex:1;text-align:right;font-size:12px;color:var(--muted)" x-text="'$'+(s.entry_price||'—')+' → $'+(s.target_price||'—')"></div>
+              <div style="flex:1;text-align:right;font-size:12px;color:var(--muted)" x-text="'$'+(s.entry_price||'â€”')+' â†’ $'+(s.target_price||'â€”')"></div>
               <div style="width:50px;text-align:right">
                 <span x-show="!s.outcome" style="font-size:11px;color:var(--muted)">Pending</span>
                 <span x-show="s.outcome" :style="'font-size:12px;font-weight:700;color:'+(s.outcome==='WIN'?'var(--green)':'var(--red)')"
@@ -684,7 +684,7 @@
             </div>
           </template>
           <div class="empty" x-show="!signals?.signals?.length">
-            <div class="empty-icon" style="font-size:32px">📋</div>
+            <div class="empty-icon" style="font-size:32px">ðŸ“‹</div>
             <div class="empty-sub">No signals yet. Screen stocks to generate signals.</div>
           </div>
         </div>
@@ -712,28 +712,28 @@
     <div class="sheet-header" x-show="selected">
       <div>
         <div style="font-size:24px;font-weight:800;color:var(--gold2)" x-text="selected?.ticker"></div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px" x-text="(selected?.fundamentals?.sector||'') + ' · ' + (selected?.fundamentals?.industry||'')"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px" x-text="(selected?.fundamentals?.sector||'') + ' Â· ' + (selected?.fundamentals?.industry||'')"></div>
         <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
           <span class="badge" :class="actionClass(selected?.summary?.action)" x-text="selected?.summary?.action"></span>
           <span style="font-size:12px;color:var(--muted)" x-text="selected?.summary?.confidence+'% confidence'"></span>
         </div>
       </div>
-      <button class="sheet-close" @click="closeSheet()">✕</button>
+      <button class="sheet-close" @click="closeSheet()">âœ•</button>
     </div>
 
     <!-- Analyst Hero in sheet -->
     <div class="sec-label">Analyst Consensus</div>
     <div class="analyst-hero" style="margin:0 16px 12px;">
       <div class="analyst-rec">Wall Street Recommendation</div>
-      <div class="analyst-val" x-text="selected?.fundamentals?.analyst_recommendation || '—'"></div>
+      <div class="analyst-val" x-text="selected?.fundamentals?.analyst_recommendation || 'â€”'"></div>
       <div class="analyst-row">
         <div class="analyst-item">
           <div class="analyst-item-label">Analyst Target</div>
-          <div class="analyst-item-val" style="color:var(--cyan)" x-text="'$'+(selected?.price_targets?.analyst_target||'—')"></div>
+          <div class="analyst-item-val" style="color:var(--cyan)" x-text="'$'+(selected?.price_targets?.analyst_target||'â€”')"></div>
         </div>
         <div class="analyst-item">
           <div class="analyst-item-label">Current</div>
-          <div class="analyst-item-val" x-text="'$'+(selected?.price_targets?.current||'—')"></div>
+          <div class="analyst-item-val" x-text="'$'+(selected?.price_targets?.current||'â€”')"></div>
         </div>
         <div class="analyst-item">
           <div class="analyst-item-label">Upside</div>
@@ -747,10 +747,10 @@
     <!-- Price levels -->
     <div class="sec-label">Trade Levels</div>
     <div class="metric-list">
-      <div class="mrow"><span class="mrow-label">🟢 Bull Target</span><span class="mrow-val" style="color:var(--green)" x-text="'$'+(selected?.price_targets?.bull_target||'—')+' (+'+selected?.price_targets?.upside_pct+'%)'"></span></div>
-      <div class="mrow"><span class="mrow-label">⚪ Entry Zone</span><span class="mrow-val" style="color:var(--gold2)" x-text="'$'+(selected?.price_targets?.entry_zone_low||'—')+' – $'+(selected?.price_targets?.entry_zone_high||'—')"></span></div>
-      <div class="mrow"><span class="mrow-label">🔴 Stop Loss</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+(selected?.price_targets?.stop_loss||'—')"></span></div>
-      <div class="mrow"><span class="mrow-label">🐻 Bear Target</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+(selected?.price_targets?.bear_target||'—')+'('+selected?.price_targets?.downside_pct+'%)'"></span></div>
+      <div class="mrow"><span class="mrow-label">ðŸŸ¢ Bull Target</span><span class="mrow-val" style="color:var(--green)" x-text="'$'+(selected?.price_targets?.bull_target||'â€”')+' (+'+selected?.price_targets?.upside_pct+'%)'"></span></div>
+      <div class="mrow"><span class="mrow-label">âšª Entry Zone</span><span class="mrow-val" style="color:var(--gold2)" x-text="'$'+(selected?.price_targets?.entry_zone_low||'â€”')+' â€“ $'+(selected?.price_targets?.entry_zone_high||'â€”')"></span></div>
+      <div class="mrow"><span class="mrow-label">ðŸ”´ Stop Loss</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+(selected?.price_targets?.stop_loss||'â€”')"></span></div>
+      <div class="mrow"><span class="mrow-label">ðŸ» Bear Target</span><span class="mrow-val" style="color:var(--red)" x-text="'$'+(selected?.price_targets?.bear_target||'â€”')+'('+selected?.price_targets?.downside_pct+'%)'"></span></div>
       <div class="mrow"><span class="mrow-label">Risk / Reward</span><span class="mrow-val" x-text="(selected?.risk?.risk_reward_ratio||0)+'x'"></span></div>
       <div class="mrow"><span class="mrow-label">Position Size</span><span class="mrow-val" x-text="(selected?.risk?.suggested_position_size_pct||0)+'% of portfolio'"></span></div>
     </div>
@@ -758,7 +758,7 @@
     <!-- Fundamentals -->
     <div class="sec-label">Key Metrics</div>
     <div class="metric-list">
-      <div class="mrow"><span class="mrow-label">Forward P/E</span><span class="mrow-val" x-text="selected?.fundamentals?.forward_pe?.toFixed(1)+'x'||'—'"></span></div>
+      <div class="mrow"><span class="mrow-label">Forward P/E</span><span class="mrow-val" x-text="selected?.fundamentals?.forward_pe?.toFixed(1)+'x'||'â€”'"></span></div>
       <div class="mrow"><span class="mrow-label">Revenue CAGR 5yr</span><span class="mrow-val" :style="'color:'+(selected?.fundamentals?.revenue_growth_5yr>=0?'var(--green)':'var(--red)')" x-text="(selected?.fundamentals?.revenue_growth_5yr||0).toFixed(1)+'%'"></span></div>
       <div class="mrow"><span class="mrow-label">Debt / Equity</span><span class="mrow-val" x-text="(selected?.fundamentals?.debt_to_equity||0).toFixed(2)+'x'"></span></div>
       <div class="mrow">
@@ -795,7 +795,7 @@
         </div>
       </div>
       <template x-for="f in (selected?.risk?.risk_factors||[])" :key="f">
-        <div style="font-size:12px;color:var(--muted);padding:2px 0">• <span x-text="f"></span></div>
+        <div style="font-size:12px;color:var(--muted);padding:2px 0">â€¢ <span x-text="f"></span></div>
       </template>
     </div>
 
@@ -804,18 +804,18 @@
     <div class="metric-list">
       <div class="mrow"><span class="mrow-label">Signal</span><span class="mrow-val" x-text="selected?.market?.signal"></span></div>
       <div class="mrow"><span class="mrow-label">RSI (14)</span><span class="mrow-val" :style="'color:'+(selected?.market?.rsi>70?'var(--red)':selected?.market?.rsi<30?'var(--green)':'var(--text)')" x-text="(selected?.market?.rsi||0).toFixed(1)"></span></div>
-      <div class="mrow"><span class="mrow-label">MA50</span><span class="mrow-val" x-text="'$'+(selected?.market?.ma50||'—')"></span></div>
+      <div class="mrow"><span class="mrow-label">MA50</span><span class="mrow-val" x-text="'$'+(selected?.market?.ma50||'â€”')"></span></div>
       <div class="mrow"><span class="mrow-label">1M Return</span><span class="mrow-val" :style="'color:'+(selected?.market?.return_1m>=0?'var(--green)':'var(--red)')" x-text="(selected?.market?.return_1m>=0?'+':'')+selected?.market?.return_1m+'%'"></span></div>
       <div class="mrow"><span class="mrow-label">3M Return</span><span class="mrow-val" :style="'color:'+(selected?.market?.return_3m>=0?'var(--green)':'var(--red)')" x-text="(selected?.market?.return_3m>=0?'+':'')+selected?.market?.return_3m+'%'"></span></div>
       <div class="mrow"><span class="mrow-label">Volume vs Avg</span><span class="mrow-val" x-text="selected?.market?.volume_ratio+'x'"></span></div>
-      <div class="mrow"><span class="mrow-label">52W Range</span><span class="mrow-val" style="font-size:12px;" x-text="'$'+selected?.market?.low_52w+' – $'+selected?.market?.high_52w"></span></div>
+      <div class="mrow"><span class="mrow-label">52W Range</span><span class="mrow-val" style="font-size:12px;" x-text="'$'+selected?.market?.low_52w+' â€“ $'+selected?.market?.high_52w"></span></div>
     </div>
 
     <!-- Rationale -->
     <div class="sec-label">Trade Rationale</div>
     <div style="padding:0 16px 12px;">
       <template x-for="r in (selected?.execution?.rationale||[])" :key="r">
-        <div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);">• <span x-text="r"></span></div>
+        <div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(30,45,69,.4);color:var(--text);">â€¢ <span x-text="r"></span></div>
       </template>
     </div>
 
@@ -828,7 +828,7 @@
           <div class="news-foot">
             <span x-text="n.source"></span>
             <span class="sent-chip" :class="n.sentiment>0.1?'sent-pos':n.sentiment<-0.1?'sent-neg':'sent-neu'"
-                  x-text="n.sentiment>0.1?'▲ Bullish':n.sentiment<-0.1?'▼ Bearish':'— Neutral'"></span>
+                  x-text="n.sentiment>0.1?'â–² Bullish':n.sentiment<-0.1?'â–¼ Bearish':'â€” Neutral'"></span>
           </div>
         </div>
       </template>
@@ -839,16 +839,16 @@
   <!-- Bottom nav -->
   <nav class="bottom-nav">
     <button class="nav-item" :class="{active: tab==='dashboard'}" @click="tab='dashboard'">
-      <span class="icon">📊</span><span>Dashboard</span>
+      <span class="icon">ðŸ“Š</span><span>Dashboard</span>
     </button>
     <button class="nav-item" :class="{active: tab==='analyze'}" @click="tab='analyze'">
-      <span class="icon">🔍</span><span>Analyze</span>
+      <span class="icon">ðŸ”</span><span>Analyze</span>
     </button>
     <button class="nav-item" :class="{active: tab==='agents'}" @click="tab='agents'">
-      <span class="icon">🤖</span><span>Agents</span>
+      <span class="icon">ðŸ¤–</span><span>Agents</span>
     </button>
     <button class="nav-item" :class="{active: tab==='perf'}" @click="tab='perf';loadPerf()">
-      <span class="icon">📈</span><span>Performance</span>
+      <span class="icon">ðŸ“ˆ</span><span>Performance</span>
     </button>
   </nav>
 
@@ -885,7 +885,7 @@
 
         get kpis() {
           const s = this.stocks;
-          if (!s.length) return {strongBuy:0,bullish:0,total:0,avgRisk:'—'};
+          if (!s.length) return {strongBuy:0,bullish:0,total:0,avgRisk:'â€”'};
           return {
             strongBuy:  s.filter(x=>x.summary?.action==='STRONG BUY').length,
             bullish:    s.filter(x=>['BULL','STRONG_BULL'].includes(x.summary?.classification)).length,
@@ -897,10 +897,12 @@
           return this.filterClass ? this.stocks.filter(s=>s.summary?.classification===this.filterClass) : this.stocks;
         },
 
-        // Wrap fetch to bypass ngrok browser-warning on all API calls
+        // Auto-detect environment - use Render URL when not on localhost
         apiFetch(url, opts={}) {
+          const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? '' : '';   // always relative - Render serves both API + frontend
           const headers = Object.assign({'ngrok-skip-browser-warning': '1'}, opts.headers||{});
-          return fetch(url, Object.assign({}, opts, {headers}));
+          return fetch(base + url, Object.assign({}, opts, {headers}));
         },
 
         init() {},
@@ -998,7 +1000,7 @@
           if (score<=3) return 'g'; if (score<=6) return 'y'; return 'r';
         },
         fmtMcap(v) {
-          if (!v) return '—';
+          if (!v) return 'â€”';
           if (v>=1e12) return '$'+(v/1e12).toFixed(2)+'T';
           if (v>=1e9)  return '$'+(v/1e9).toFixed(1)+'B';
           return '$'+(v/1e6).toFixed(0)+'M';
@@ -1008,3 +1010,4 @@
   </script>
 </body>
 </html>
+
