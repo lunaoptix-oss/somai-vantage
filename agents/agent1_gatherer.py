@@ -1,21 +1,24 @@
 """
 Agent 1: Information Gathering
-Uses direct Yahoo Finance API with cookie/crumb auth to work on cloud servers.
+Uses only Yahoo Finance endpoints that work from cloud servers:
+  - fast_info        → real-time price, market cap, 52w range
+  - analyst_price_targets → mean/high/low analyst targets
+  - recommendations_summary → strongBuy/buy/hold/sell counts
+  - history()        → OHLCV for technicals
+  - financials       → revenue for CAGR
+  - news             → headlines + sentiment
 """
 import yfinance as yf
 import requests
-import json
 import pandas as pd
 import numpy as np
 from datetime import datetime
 from typing import Dict, List, Optional
 
-# ─── Yahoo Finance session with cookie + crumb (bypasses cloud IP blocks) ────
-
+# ── Session with browser headers ──────────────────────────────────────────────
 _SESSION: Optional[requests.Session] = None
-_CRUMB:   Optional[str] = None
 
-def _get_session() -> requests.Session:
+def _session() -> requests.Session:
     global _SESSION
     if _SESSION is None:
         _SESSION = requests.Session()
@@ -25,97 +28,45 @@ def _get_session() -> requests.Session:
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/124.0.0.0 Safari/537.36"
             ),
-            "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Referer":         "https://finance.yahoo.com/",
+            "Referer": "https://finance.yahoo.com/",
         })
-        # Seed cookies
-        try:
-            _SESSION.get("https://finance.yahoo.com/", timeout=10)
-        except Exception:
-            pass
+        try: _SESSION.get("https://finance.yahoo.com/", timeout=8)
+        except: pass
     return _SESSION
 
-def _get_crumb() -> Optional[str]:
-    global _CRUMB
-    if _CRUMB:
-        return _CRUMB
+def ticker(symbol: str) -> yf.Ticker:
+    return yf.Ticker(symbol, session=_session())
+
+def n(val, default=0.0):
     try:
-        s = _get_session()
-        r = s.get("https://query2.finance.yahoo.com/v1/test/getcrumb", timeout=10)
-        if r.status_code == 200 and r.text not in ("", "null"):
-            _CRUMB = r.text.strip()
-    except Exception:
-        pass
-    return _CRUMB
-
-def _yf_summary(ticker: str) -> Dict:
-    """Fetch quote summary directly from Yahoo Finance API."""
-    s     = _get_session()
-    crumb = _get_crumb()
-    modules = "summaryDetail,defaultKeyStatistics,financialData,recommendationTrend,upgradeDowngradeHistory"
-    params  = {"modules": modules, "formatted": "false", "lang": "en-US"}
-    if crumb:
-        params["crumb"] = crumb
-
-    for host in ("query1", "query2"):
-        try:
-            url = f"https://{host}.finance.yahoo.com/v10/finance/quoteSummary/{ticker}"
-            r   = s.get(url, params=params, timeout=15)
-            if r.status_code == 200:
-                data = r.json()
-                result = data.get("quoteSummary", {}).get("result", [])
-                if result:
-                    return result[0]
-        except Exception:
-            continue
-    return {}
-
-def _yf_quote(ticker: str) -> Dict:
-    """Fast quote endpoint — price, change, volume."""
-    s = _get_session()
-    try:
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
-        r   = s.get(url, params={"interval": "1d", "range": "1d"}, timeout=10)
-        if r.status_code == 200:
-            meta = r.json().get("chart", {}).get("result", [{}])[0].get("meta", {})
-            return meta
-    except Exception:
-        pass
-    return {}
-
-def get_yf_ticker(symbol: str):
-    return yf.Ticker(symbol, session=_get_session())
+        v = float(val)
+        return default if (v != v) else v
+    except: return default
 
 
-# ─── News Analyst ─────────────────────────────────────────────────────────────
+# ── News Analyst ──────────────────────────────────────────────────────────────
 class NewsAnalystAgent:
     POS = ["beat","surge","soar","record","growth","profit","upgrade","buy","strong",
-           "gain","rally","breakout","bullish","exceed","raised","outperform","jump","boost"]
+           "gain","rally","breakout","bullish","exceed","raised","outperform","boost"]
     NEG = ["miss","drop","fall","loss","decline","downgrade","sell","weak","risk",
-           "cut","bearish","concern","warn","below","disappoint","layoff","slump","crash"]
+           "cut","bearish","concern","warn","below","disappoint","layoff","slump"]
 
-    def get_news(self, ticker: str) -> List[Dict]:
+    def get_news(self, sym: str) -> List[Dict]:
         try:
-            stock = get_yf_ticker(ticker)
-            news  = stock.news or []
-            out   = []
+            news = ticker(sym).news or []
+            out  = []
             for item in news[:10]:
                 c     = item.get("content", {}) if isinstance(item.get("content"), dict) else item
                 title = c.get("title", item.get("title", ""))
-                pub   = c.get("pubDate", item.get("providerPublishTime", ""))
                 src   = (c.get("provider", {}) or {}).get("displayName", "Yahoo Finance")
                 if title:
-                    out.append({
-                        "title":     title,
-                        "published": str(pub),
-                        "sentiment": self._score(title),
-                        "source":    src,
-                    })
+                    out.append({"title": title,
+                                "published": str(c.get("pubDate", "")),
+                                "sentiment": self._score(title),
+                                "source": src})
             return out
-        except Exception:
-            return []
+        except: return []
 
     def _score(self, text: str) -> float:
         t   = text.lower()
@@ -125,39 +76,35 @@ class NewsAnalystAgent:
         return round((pos - neg) / tot, 2) if tot else 0.0
 
 
-# ─── Social Analyst ───────────────────────────────────────────────────────────
+# ── Social Analyst ────────────────────────────────────────────────────────────
 class SocialMediaAnalystAgent:
-    def get_sentiment_score(self, ticker: str, news: List[Dict]) -> Dict:
+    def get_sentiment_score(self, sym: str, news: List[Dict]) -> Dict:
         if not news:
             return {"score": 0.0, "volume": 0, "trend": "neutral"}
-        scores = [n["sentiment"] for n in news]
+        scores = [n(x["sentiment"]) for x in news]
         avg    = float(np.mean(scores))
-        trend  = "bullish" if avg > 0.15 else ("bearish" if avg < -0.15 else "neutral")
+        trend  = "bullish" if avg > 0.15 else "bearish" if avg < -0.15 else "neutral"
         return {"score": round(avg, 2), "volume": len(news), "trend": trend}
 
 
-# ─── Market Analyst ───────────────────────────────────────────────────────────
+# ── Market Analyst ────────────────────────────────────────────────────────────
 class MarketAnalystAgent:
-    def analyze(self, ticker: str) -> Dict:
+    def analyze(self, sym: str) -> Dict:
         try:
-            stock = get_yf_ticker(ticker)
-            hist  = stock.history(period="6mo")
+            t    = ticker(sym)
+            hist = t.history(period="6mo")
 
-            # Fallback: get current price from chart API if history empty
-            current = None
+            # Price from fast_info if history empty
             if hist.empty:
-                meta    = _yf_quote(ticker)
-                current = meta.get("regularMarketPrice") or meta.get("previousClose")
+                fi      = t.fast_info
+                current = n(getattr(fi, "last_price", None))
                 if not current:
                     return {}
-                return {
-                    "current_price": round(float(current), 2),
-                    "ma50": None, "ma200": None,
-                    "rsi": 50.0, "volume_ratio": 1.0,
-                    "high_52w": None, "low_52w": None,
-                    "return_1m": 0.0, "return_3m": 0.0, "return_6m": 0.0,
-                    "signal": "HOLD",
-                }
+                return {"current_price": round(current, 2),
+                        "ma50": None, "ma200": None, "rsi": 50.0,
+                        "volume_ratio": 1.0, "high_52w": None, "low_52w": None,
+                        "return_1m": 0.0, "return_3m": 0.0, "return_6m": 0.0,
+                        "signal": "HOLD"}
 
             close   = hist["Close"]
             volume  = hist["Volume"]
@@ -170,24 +117,23 @@ class MarketAnalystAgent:
             gain  = delta.clip(lower=0).rolling(14).mean()
             loss  = (-delta.clip(upper=0)).rolling(14).mean()
             rs    = gain / loss.replace(0, np.nan)
-            rsi   = float(100 - (100 / (1 + rs.iloc[-1])))
-            if np.isnan(rsi):
-                rsi = 50.0
+            rsi   = 100 - (100 / (1 + float(rs.iloc[-1])))
+            if np.isnan(rsi): rsi = 50.0
 
             avg_vol   = float(volume.tail(30).mean())
             vol_ratio = round(float(volume.tail(5).mean()) / avg_vol, 2) if avg_vol > 0 else 1.0
 
-            def ret(n):
-                return round((current / float(close.iloc[-n]) - 1) * 100, 2) if len(close) >= n else 0.0
+            def ret(n_periods):
+                return round((current / float(close.iloc[-n_periods]) - 1) * 100, 2) if len(close) >= n_periods else 0.0
 
             signal = ("BUY"  if current > ma50 > ma200 and rsi < 72 else
                       "SELL" if current < ma50 < ma200 and rsi > 28 else "HOLD")
 
             return {
                 "current_price": round(current, 2),
-                "ma50":          round(ma50,    2),
-                "ma200":         round(ma200,   2),
-                "rsi":           round(rsi,     2),
+                "ma50":          round(ma50, 2),
+                "ma200":         round(ma200, 2),
+                "rsi":           round(rsi, 2),
                 "volume_ratio":  vol_ratio,
                 "high_52w":      round(float(close.tail(252).max()), 2),
                 "low_52w":       round(float(close.tail(252).min()), 2),
@@ -200,83 +146,92 @@ class MarketAnalystAgent:
             return {"error": str(e)}
 
 
-# ─── Fundamental Analyst ──────────────────────────────────────────────────────
+# ── Fundamental Analyst ───────────────────────────────────────────────────────
 class FundamentalAnalystAgent:
-    def analyze(self, ticker: str) -> Dict:
+    def analyze(self, sym: str) -> Dict:
         try:
-            # Primary: direct Yahoo Finance summary API
-            summary = _yf_summary(ticker)
-            fd  = summary.get("financialData", {})
-            sd  = summary.get("summaryDetail", {})
-            ks  = summary.get("defaultKeyStatistics", {})
-            rec = summary.get("recommendationTrend", {})
+            t  = ticker(sym)
+            fi = t.fast_info           # always works from cloud
+            info = {}
+            try: info = t.info or {}   # may fail on cloud - that's ok
+            except: pass
 
-            def v(d, *keys):
-                for k in keys:
-                    val = d.get(k)
-                    if isinstance(val, dict):
-                        val = val.get("raw", val.get("fmt"))
-                    if val is not None:
-                        try: return float(val)
-                        except: return val
-                return None
+            # Price — fast_info is reliable
+            price = n(getattr(fi, "last_price", None)) or n(info.get("currentPrice")) or n(info.get("regularMarketPrice"))
 
-            price        = v(fd, "currentPrice") or v(sd, "previousClose", "regularMarketPreviousClose")
-            forward_pe   = v(sd, "forwardPE") or v(ks, "forwardPE")
-            analyst_tgt  = v(fd, "targetMeanPrice", "targetMedianPrice")
-            analyst_rec  = fd.get("recommendationKey", "hold")
-            if isinstance(analyst_rec, dict):
-                analyst_rec = analyst_rec.get("fmt", "hold")
-            analyst_rec = str(analyst_rec).upper().replace("_", " ")
+            # Market cap
+            mcap = n(getattr(fi, "market_cap", None)) or n(info.get("marketCap"))
 
-            debt_eq      = v(ks, "debtToEquity")
-            roe          = v(fd, "returnOnEquity")
-            margin       = v(fd, "profitMargins")
-            gross_margin = v(fd, "grossProfits")  # will normalise below
-            beta         = v(ks, "beta")
-            market_cap   = v(sd, "marketCap") or v(ks, "enterpriseValue")
-            div_yield    = v(sd, "dividendYield", "trailingAnnualDividendYield") or 0
-            payout       = v(sd, "payoutRatio") or 0
-            curr_ratio   = v(fd, "currentRatio") or 0
+            # Analyst targets — analyst_price_targets works from cloud
+            analyst_tgt = None
+            analyst_rec = "HOLD"
+            try:
+                apt = t.analyst_price_targets
+                if apt and isinstance(apt, dict):
+                    analyst_tgt = n(apt.get("mean") or apt.get("median"))
+                elif apt is not None:
+                    analyst_tgt = n(getattr(apt, "mean", None))
+            except: pass
 
-            # Fallback to yfinance .info if summary missing key fields
-            if not price or not forward_pe:
-                try:
-                    info         = get_yf_ticker(ticker).fast_info
-                    price        = price or getattr(info, "last_price", None)
-                    market_cap   = market_cap or getattr(info, "market_cap", None)
-                except Exception:
-                    pass
+            # Analyst recommendation from recommendations_summary
+            try:
+                rs = t.recommendations_summary
+                if rs is not None and len(rs) > 0:
+                    row        = rs.iloc[0]
+                    strong_buy = n(row.get("strongBuy", 0))
+                    buy        = n(row.get("buy", 0))
+                    hold       = n(row.get("hold", 0))
+                    sell       = n(row.get("sell", 0))
+                    s_sell     = n(row.get("strongSell", 0))
+                    total      = strong_buy + buy + hold + sell + s_sell
+                    if total > 0:
+                        bull_pct = (strong_buy + buy) / total
+                        if   bull_pct >= 0.7: analyst_rec = "STRONG BUY"
+                        elif bull_pct >= 0.5: analyst_rec = "BUY"
+                        elif (sell + s_sell) / total >= 0.4: analyst_rec = "SELL"
+                        else: analyst_rec = "HOLD"
+            except: pass
 
-            sector, industry = self._sector(ticker)
-            rev_growth = self._revenue_cagr(ticker)
+            # Fallback rec from info
+            if analyst_rec == "HOLD" and info.get("recommendationKey"):
+                analyst_rec = str(info["recommendationKey"]).upper().replace("_", " ")
 
-            # Normalise percentages
-            if roe   and abs(roe)   > 1: roe   /= 100
-            if margin and abs(margin) > 1: margin /= 100
-            if div_yield and abs(div_yield) > 1: div_yield /= 100
-            if payout and abs(payout) > 1: payout /= 100
-            if debt_eq and abs(debt_eq) > 10: debt_eq /= 100
+            # Fundamentals — try info, graceful on failure
+            forward_pe   = n(info.get("forwardPE") or info.get("trailingPE"))
+            debt_eq      = n(info.get("debtToEquity"))
+            if debt_eq > 10: debt_eq /= 100   # normalise if given as percentage
+            roe          = n(info.get("returnOnEquity"))
+            if abs(roe) > 1: roe /= 100
+            margin       = n(info.get("profitMargins"))
+            if abs(margin) > 1: margin /= 100
+            gross_margin = n(info.get("grossMargins"))
+            if abs(gross_margin) > 1: gross_margin /= 100
+            beta         = n(info.get("beta"), 1.0)
+            div_yield    = n(info.get("dividendYield") or info.get("trailingAnnualDividendYield"))
+            if abs(div_yield) > 1: div_yield /= 100
+            payout       = n(info.get("payoutRatio"))
+            if abs(payout) > 1: payout /= 100
+            curr_ratio   = n(info.get("currentRatio"))
+            sector       = info.get("sector",   "Technology")
+            industry     = info.get("industry", "Unknown")
 
-            gross_m = v(fd, "grossMargins") or 0
-            if gross_m and abs(gross_m) > 1: gross_m /= 100
-
-            div_score = self._div_score(div_yield, payout, roe or 0, margin or 0)
-            moat      = self._moat(margin or 0, roe or 0, market_cap or 0, gross_m, sector)
+            rev_growth   = self._rev_cagr(t)
+            div_score    = self._div_score(div_yield, payout, roe, margin)
+            moat         = self._moat(margin, roe, mcap, gross_margin, sector)
 
             return {
                 "forward_pe":              round(forward_pe, 2) if forward_pe else None,
                 "revenue_growth_5yr":      rev_growth,
-                "debt_to_equity":          round(debt_eq / 100, 2) if debt_eq and debt_eq > 1 else round(debt_eq or 0, 2),
-                "dividend_yield":          round((div_yield or 0) * 100, 2),
-                "payout_ratio":            round((payout or 0)    * 100, 2),
+                "debt_to_equity":          round(debt_eq, 2),
+                "dividend_yield":          round(div_yield * 100, 2),
+                "payout_ratio":            round(payout   * 100, 2),
                 "dividend_sustainability": div_score,
-                "roe":                     round((roe    or 0)    * 100, 2),
-                "profit_margin":           round((margin or 0)    * 100, 2),
-                "gross_margin":            round(gross_m          * 100, 2),
-                "current_ratio":           round(curr_ratio,  2),
-                "beta":                    round(beta or 1.0, 2),
-                "market_cap":              int(market_cap) if market_cap else None,
+                "roe":                     round(roe      * 100, 2),
+                "profit_margin":           round(margin   * 100, 2),
+                "gross_margin":            round(gross_margin * 100, 2),
+                "current_ratio":           round(curr_ratio, 2),
+                "beta":                    round(beta, 2),
+                "market_cap":              int(mcap) if mcap else None,
                 "sector":                  sector,
                 "industry":               industry,
                 "analyst_target":          round(analyst_tgt, 2) if analyst_tgt else None,
@@ -287,16 +242,9 @@ class FundamentalAnalystAgent:
         except Exception as e:
             return {"error": str(e)}
 
-    def _sector(self, ticker: str):
+    def _rev_cagr(self, t) -> float:
         try:
-            info = get_yf_ticker(ticker).info
-            return info.get("sector", "Unknown"), info.get("industry", "Unknown")
-        except Exception:
-            return "Unknown", "Unknown"
-
-    def _revenue_cagr(self, ticker: str) -> float:
-        try:
-            fin = get_yf_ticker(ticker).financials
+            fin = t.financials
             if fin is None or fin.empty: return 0.0
             row = next((i for i in fin.index if "revenue" in str(i).lower()), None)
             if not row: return 0.0
@@ -304,15 +252,14 @@ class FundamentalAnalystAgent:
             if len(rev) < 2: return 0.0
             oldest, newest = float(rev.iloc[-1]), float(rev.iloc[0])
             if oldest <= 0: return 0.0
-            return round(((newest / oldest) ** (1 / max(len(rev) - 1, 1)) - 1) * 100, 2)
-        except Exception:
-            return 0.0
+            return round(((newest / oldest) ** (1 / max(len(rev)-1,1)) - 1) * 100, 2)
+        except: return 0.0
 
     def _div_score(self, yld, payout, roe, margin) -> int:
         s = 50
-        if yld   and yld   > 0:    s += 10
-        if payout and payout < 0.6: s += 20
-        elif payout and payout > 0.9: s -= 20
+        if yld   > 0:    s += 10
+        if payout < 0.6: s += 20
+        elif payout > 0.9: s -= 20
         if roe   > 0.15: s += 10
         if margin > 0.10: s += 10
         return max(0, min(100, s))
@@ -323,29 +270,29 @@ class FundamentalAnalystAgent:
         elif margin > 0.10: s += 1
         if roe > 0.20: s += 2
         elif roe > 0.10: s += 1
-        if mcap > 100_000_000_000: s += 2
-        elif mcap > 10_000_000_000: s += 1
+        if mcap > 100e9: s += 2
+        elif mcap > 10e9: s += 1
         if gross_m > 0.50: s += 2
         elif gross_m > 0.30: s += 1
         if sector in ("Technology", "Healthcare"): s += 1
         return min(10.0, float(s))
 
 
-# ─── Main Gatherer ────────────────────────────────────────────────────────────
+# ── Orchestrator ──────────────────────────────────────────────────────────────
 class InformationGatherer:
     def __init__(self):
-        self.news   = NewsAnalystAgent()
-        self.social = SocialMediaAnalystAgent()
-        self.market = MarketAnalystAgent()
-        self.fund   = FundamentalAnalystAgent()
+        self.news_agent   = NewsAnalystAgent()
+        self.social_agent = SocialMediaAnalystAgent()
+        self.market_agent = MarketAnalystAgent()
+        self.fund_agent   = FundamentalAnalystAgent()
 
-    def gather(self, ticker: str) -> Dict:
-        news         = self.news.get_news(ticker)
+    def gather(self, sym: str) -> Dict:
+        news = self.news_agent.get_news(sym)
         return {
-            "ticker":           ticker,
+            "ticker":           sym,
             "timestamp":        datetime.utcnow().isoformat(),
             "news":             news,
-            "social_sentiment": self.social.get_sentiment_score(ticker, news),
-            "market":           self.market.analyze(ticker),
-            "fundamentals":     self.fund.analyze(ticker),
+            "social_sentiment": self.social_agent.get_sentiment_score(sym, news),
+            "market":           self.market_agent.analyze(sym),
+            "fundamentals":     self.fund_agent.analyze(sym),
         }
