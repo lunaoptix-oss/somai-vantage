@@ -123,9 +123,9 @@ class ResearcherAgent:
         }
 
     def _compute_price_targets(self, market: Dict, fund: Dict) -> Dict:
-        current = fund.get("current_price") or market.get("current_price", 100)
-        if not current:
-            current = 100
+        current = fund.get("current_price") or market.get("current_price")
+        if not current or current <= 0:
+            return {}   # skip if no price data
 
         analyst_target = fund.get("analyst_target") or current
         beta = fund.get("beta", 1.0)
