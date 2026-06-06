@@ -17,6 +17,34 @@ executor = ExecutionAgent()
 feedback = FeedbackAgent()
 
 
+def _enrich_analyst(result: Dict) -> Dict:
+    """
+    When Yahoo Finance blocks analyst data (cloud IP restriction), derive
+    recommendation and target from our own 5-agent analysis.
+    """
+    fund = result.get("fundamentals", {})
+    research = result.get("research", {})
+    pt = result.get("price_targets", {})
+    cls = research.get("classification", "NEUTRAL")
+    score = research.get("composite_score", 0.5)
+
+    # Fill analyst_recommendation from AI composite if missing
+    if not fund.get("analyst_recommendation") or fund.get("analyst_recommendation") == "HOLD":
+        if score >= 0.65:   rec = "STRONG BUY"
+        elif score >= 0.55: rec = "BUY"
+        elif score <= 0.35: rec = "STRONG SELL"
+        elif score <= 0.45: rec = "SELL"
+        else:               rec = "HOLD"
+        fund["analyst_recommendation"] = rec
+
+    # Fill analyst_target from our bull target if missing
+    if not fund.get("analyst_target") and pt.get("bull_target"):
+        fund["analyst_target"] = pt["bull_target"]
+
+    result["fundamentals"] = fund
+    return result
+
+
 def analyze_ticker(ticker: str) -> Dict:
     ticker = ticker.upper().strip()
 
@@ -38,7 +66,7 @@ def analyze_ticker(ticker: str) -> Dict:
     # Agent 1 refinements from feedback loop
     refinements = feedback.get_agent1_refinements()
 
-    return {
+    result = {
         "ticker": ticker,
         "signal_id": signal_id,
         "summary": {
@@ -61,6 +89,7 @@ def analyze_ticker(ticker: str) -> Dict:
         "social_sentiment": gathered["social_sentiment"],
         "refinements": refinements,
     }
+    return _enrich_analyst(result)
 
 
 async def analyze_tickers_async(tickers: List[str]) -> List[Dict]:
