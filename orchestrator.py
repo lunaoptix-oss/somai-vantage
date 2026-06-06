@@ -37,9 +37,23 @@ def _enrich_analyst(result: Dict) -> Dict:
         else:               rec = "HOLD"
         fund["analyst_recommendation"] = rec
 
-    # Fill analyst_target from our bull target if missing
-    if not fund.get("analyst_target") and pt.get("bull_target"):
-        fund["analyst_target"] = pt["bull_target"]
+    # Fill analyst_target with a meaningful estimate when not available from Yahoo Finance
+    if not fund.get("analyst_target"):
+        current = pt.get("current") or fund.get("current_price", 0)
+        if current and current > 0:
+            # Estimate based on AI composite score — mirrors typical analyst upside
+            if score >= 0.65:   mult = 1.25   # STRONG BUY: ~25% upside
+            elif score >= 0.55: mult = 1.15   # BUY:        ~15% upside
+            elif score >= 0.45: mult = 1.05   # HOLD:       ~5% upside
+            elif score >= 0.35: mult = 0.95   # SELL:       ~5% downside
+            else:               mult = 0.85   # STRONG SELL:~15% downside
+            # Blend with 52w high if available
+            high52 = result.get("market", {}).get("high_52w")
+            if high52 and high52 > current:
+                target = round((current * mult * 0.6 + high52 * 0.4), 2)
+            else:
+                target = round(current * mult, 2)
+            fund["analyst_target"] = target
 
     result["fundamentals"] = fund
     return result
