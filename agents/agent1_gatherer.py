@@ -91,11 +91,11 @@ class SocialMediaAnalystAgent:
 class MarketAnalystAgent:
     def analyze(self, sym: str) -> Dict:
         try:
-            t    = ticker(sym)
-            hist = t.history(period="6mo")
+            # yf.download() is the most reliable cloud-safe endpoint
+            hist = yf.download(sym, period="6mo", progress=False, auto_adjust=True)
 
             # Price from fast_info if history empty
-            if hist.empty:
+            if hist is None or hist.empty:
                 fi      = t.fast_info
                 current = n(getattr(fi, "last_price", None))
                 if not current:
@@ -106,8 +106,13 @@ class MarketAnalystAgent:
                         "return_1m": 0.0, "return_3m": 0.0, "return_6m": 0.0,
                         "signal": "HOLD"}
 
-            close   = hist["Close"]
-            volume  = hist["Volume"]
+            # Handle both single and multi-ticker download column structures
+            close  = hist["Close"] if "Close" in hist.columns else hist.xs("Close", axis=1, level=0)
+            volume = hist["Volume"] if "Volume" in hist.columns else hist.xs("Volume", axis=1, level=0)
+            if hasattr(close, 'squeeze'): close  = close.squeeze()
+            if hasattr(volume, 'squeeze'): volume = volume.squeeze()
+            close  = close.dropna()
+            volume = volume.dropna()
             current = float(close.iloc[-1])
 
             ma50  = float(close.rolling(50).mean().iloc[-1])
