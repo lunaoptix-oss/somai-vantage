@@ -56,6 +56,18 @@ def _enrich_analyst(result: Dict) -> Dict:
             fund["analyst_target"] = target
 
     result["fundamentals"] = fund
+
+    # Also patch price_targets.analyst_target (what the frontend reads)
+    if result.get("price_targets") and fund.get("analyst_target"):
+        pt = result["price_targets"]
+        if not pt.get("analyst_target") or pt.get("analyst_target") == pt.get("current"):
+            pt["analyst_target"] = fund["analyst_target"]
+            # Recalculate upside with the new target
+            cur = pt.get("current", 0)
+            if cur and cur > 0:
+                pt["upside_pct"] = round((fund["analyst_target"] - cur) / cur * 100, 1)
+            result["price_targets"] = pt
+
     return result
 
 
