@@ -249,6 +249,7 @@ class FundamentalAnalystAgent:
         curr_r    = n(info.get("currentRatio"))
 
         return {
+            # fwd_pe here is forward P/E from info when available, TTM P/E when calculated
             "forward_pe":              round(fwd_pe, 2) if fwd_pe else None,
             "revenue_growth_5yr":      rev_growth,
             "debt_to_equity":          round(debt_eq, 2),
