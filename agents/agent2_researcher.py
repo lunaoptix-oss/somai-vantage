@@ -4,6 +4,7 @@ All arithmetic uses safe n() helper so None values never cause crashes.
 """
 from typing import Dict
 import numpy as np
+from agents.agent5_feedback import load_weights
 
 
 def n(val, default=0.0):
@@ -17,14 +18,10 @@ def n(val, default=0.0):
 
 class ResearcherAgent:
 
-    WEIGHTS = {
-        "news_sentiment":      0.15,
-        "social_sentiment":    0.10,
-        "technical_signal":    0.20,
-        "fundamental_quality": 0.30,
-        "momentum":            0.15,
-        "valuation":           0.10,
-    }
+    # Weights are loaded dynamically — Agent 5 retrains them over time
+    @property
+    def WEIGHTS(self):
+        return load_weights()
 
     def research(self, gathered: Dict) -> Dict:
         ticker  = gathered["ticker"]
