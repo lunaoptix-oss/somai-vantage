@@ -24,6 +24,10 @@ def sanitize(obj):
     return obj
 
 from orchestrator import analyze_ticker, analyze_tickers_async, DEFAULT_UNIVERSE, feedback
+from agents.portfolio import PortfolioManager
+from agents.agent5_feedback import load_weights
+
+portfolio_mgr = PortfolioManager()
 
 app = FastAPI(title="GS Multi-Agent Stock Dashboard", version="1.0.0")
 
@@ -37,7 +41,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# â”€â”€â”€ Cache â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Cache ──────────────────────────────────────────────────────────────────
 _cache: dict = {}
 _cache_time: dict = {}
 CACHE_TTL = 300  # 5 minutes
@@ -56,7 +60,7 @@ def set_cache(ticker: str, data: dict):
     _cache_time[ticker] = time.time()
 
 
-# â”€â”€â”€ Routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─── Routes ─────────────────────────────────────────────────────────────────
 
 @app.get("/")
 def root():
@@ -131,6 +135,83 @@ def list_signals():
 @app.get("/api/universe")
 def get_universe():
     return {"tickers": DEFAULT_UNIVERSE}
+
+
+# ─── Portfolio endpoints ─────────────────────────────────────────────────────
+
+class AddPositionRequest(BaseModel):
+    ticker: str
+    timeframe: str = "1M"   # 2W | 1M | 3M | 6M
+
+@app.post("/api/portfolio/add")
+def portfolio_add(req: AddPositionRequest):
+    """Add a stock to the monitored portfolio (paper trade)."""
+    ticker = req.ticker.upper().strip()
+    try:
+        analysis = analyze_ticker(ticker)
+        position = portfolio_mgr.add_position(ticker, analysis, req.timeframe)
+        return sanitize({"position": position, "analysis_summary": analysis.get("summary")})
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/api/portfolio")
+def portfolio_get():
+    """Return all positions with live P&L."""
+    positions = portfolio_mgr.get_positions(refresh_prices=True)
+    summary   = portfolio_mgr.get_summary()
+    return sanitize({"positions": positions, "summary": summary})
+
+@app.post("/api/portfolio/close/{position_id}")
+def portfolio_close(position_id: str):
+    pos = portfolio_mgr.close_position(position_id)
+    if not pos:
+        raise HTTPException(status_code=404, detail="Position not found")
+    return sanitize(pos)
+
+@app.post("/api/portfolio/evaluate/{position_id}")
+def portfolio_evaluate(position_id: str):
+    """Evaluate a matured position and trigger Agent 5 retraining."""
+    pos = portfolio_mgr.evaluate_position(position_id)
+    if not pos:
+        raise HTTPException(status_code=404, detail="Position not found")
+
+    # Trigger retraining with ALL evaluated positions
+    all_positions = portfolio_mgr.get_positions(refresh_prices=False)
+    evaluated     = [p for p in all_positions if p.get("correct_prediction") is not None]
+    retrain_result = feedback.retrain_from_portfolio(evaluated)
+
+    return sanitize({"position": pos, "retrain": retrain_result})
+
+@app.post("/api/portfolio/evaluate_all")
+def portfolio_evaluate_all():
+    """Evaluate all due positions and retrain Agent 2 weights."""
+    positions = portfolio_mgr.get_positions(refresh_prices=True)
+    due       = [p for p in positions if p.get("due_for_eval") and p["status"] == "OPEN"]
+    evaluated = []
+    for pos in due:
+        result = portfolio_mgr.evaluate_position(pos["id"])
+        if result:
+            evaluated.append(result)
+
+    all_evaluated = [p for p in portfolio_mgr.get_positions(False)
+                     if p.get("correct_prediction") is not None]
+    retrain_result = feedback.retrain_from_portfolio(all_evaluated)
+
+    return sanitize({
+        "evaluated_count": len(evaluated),
+        "evaluated":       evaluated,
+        "retrain":         retrain_result,
+    })
+
+@app.get("/api/portfolio/weights")
+def get_weights():
+    """Return current Agent 2 weights and learning history."""
+    return sanitize(feedback.get_weight_insight())
+
+@app.get("/api/portfolio/retrain_log")
+def get_retrain_log():
+    log = feedback.get_retrain_log()
+    return sanitize({"log": log[-20:]})
 
 
 if __name__ == "__main__":
