@@ -201,6 +201,82 @@
     .sig-row{padding:12px 16px;border-bottom:1px solid rgba(30,45,69,.5);display:flex;align-items:center;gap:12px}
     .sig-row:last-child{border-bottom:none}
 
+
+    /* TRACK BUTTON */
+    .track-btn{padding:8px 18px;border-radius:10px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,#1a3a5c,#1e4976);color:#e8c96d;
+      font-weight:700;font-size:12px;border:1px solid #2563eb;transition:all .15s}
+    .track-btn:active{opacity:.7}
+
+    /* POSITION CARDS */
+    .pos-card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+      padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+    .pos-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .pos-card.win::before{background:var(--green)}
+    .pos-card.loss::before{background:var(--red)}
+    .pos-card.open::before{background:var(--gold)}
+    .pos-card.stopped::before{background:var(--muted)}
+    .pos-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+    .pos-ticker{font-size:18px;font-weight:800;color:var(--gold2)}
+    .pos-status{font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px}
+    .status-open{background:#1c1100;color:var(--gold2);border:1px solid #78350f}
+    .status-win{background:#052e16;color:var(--green);border:1px solid #15803d}
+    .status-loss{background:#450a0a;color:var(--red);border:1px solid #991b1b}
+    .status-stopped{background:#1c1917;color:var(--muted);border:1px solid #44403c}
+    .pos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+    .pos-cell{background:var(--card2);border-radius:8px;padding:8px;text-align:center}
+    .pos-cell-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+    .pos-cell-val{font-size:14px;font-weight:700}
+    .pnl-bar-track{height:6px;background:var(--card2);border-radius:3px;overflow:hidden;margin:6px 0 10px}
+    .pnl-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+    .pos-actions{display:flex;gap:8px}
+    .pos-action-btn{flex:1;padding:8px;border-radius:8px;border:none;cursor:pointer;
+      font-size:11px;font-weight:700;transition:opacity .15s}
+    .pos-action-btn:active{opacity:.7}
+    .eval-btn{background:#1a3a5c;color:var(--cyan);border:1px solid #2563eb}
+    .close-pos-btn{background:#450a0a;color:var(--red);border:1px solid #991b1b}
+
+    /* ADD MODAL */
+    .modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);
+      backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+    .modal-overlay.on{display:flex}
+    .modal{background:var(--card);border-radius:24px 24px 0 0;
+      width:100%;max-width:480px;padding:24px 20px 32px}
+    .modal-title{font-size:18px;font-weight:800;margin-bottom:4px}
+    .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+    .tf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+    .tf-btn{padding:10px 8px;border-radius:10px;border:1px solid var(--border);
+      background:var(--card2);color:var(--muted);font-size:12px;font-weight:700;
+      cursor:pointer;text-align:center;transition:all .15s}
+    .tf-btn.on{background:var(--gold);color:#000;border-color:var(--gold)}
+    .confirm-btn{width:100%;padding:14px;border-radius:12px;border:none;
+      background:var(--gold);color:#000;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px}
+    .cancel-btn{width:100%;padding:10px;border-radius:12px;border:1px solid var(--border);
+      background:none;color:var(--muted);font-size:13px;cursor:pointer;margin-top:8px}
+
+    /* WEIGHT BARS */
+    .wbar-wrap{margin-bottom:10px}
+    .wbar-header{display:flex;justify-content:space-between;align-items:center;
+      font-size:12px;margin-bottom:4px}
+    .wbar-label{color:var(--muted);text-transform:capitalize}
+    .wbar-pct{font-weight:700}
+    .wbar-track{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+    .wbar-fill{height:100%;border-radius:4px;transition:width .6s}
+    .wbar-default{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,.25)}
+
+    /* LEARNING CARD */
+    .learn-card{background:linear-gradient(135deg,#0d1521,#111827);border:1px solid var(--border);
+      border-radius:14px;padding:16px;margin-bottom:12px}
+    .learn-title{font-size:13px;font-weight:700;margin-bottom:4px}
+    .learn-sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+
+    /* SECTION TABS */
+    .perf-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--card2);
+      padding:4px;border-radius:12px}
+    .perf-tab{flex:1;padding:8px 4px;border-radius:8px;border:none;background:none;
+      color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
+    .perf-tab.on{background:var(--card);color:var(--gold2);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
     /* RADAR */
     .radar-wrap{padding:16px;max-width:320px;margin:0 auto}
 
@@ -261,7 +337,7 @@
 
   <div class="card" x-show="!loading && filtered.length">
     <template x-for="s in filtered" :key="s.ticker">
-      <div class="srow" @click="openSheet(s)">
+      <div class="srow" @click="openSheet(s)" @dblclick.prevent="openAddModal(s)">
         <div class="avatar" :style="'background:'+avatarBg(s.summary?.classification)">
           <span x-text="s.ticker.slice(0,3)"></span>
         </div>
@@ -315,6 +391,12 @@
   <div x-show="analyzeErr" style="padding:12px 16px;color:var(--red);font-size:13px" x-text="analyzeErr"></div>
 
   <div x-show="ar && !analyzing">
+    <!-- Track button for current analysis -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px" x-show="ar">
+      <button class="track-btn" @click="openAddModal(ar)">
+        + Track This Stock
+      </button>
+    </div>
     <!-- Analyst Hero -->
     <div class="sec">Analyst Consensus</div>
     <div class="analyst-box">
@@ -511,43 +593,242 @@
 
 <!-- ===== PERFORMANCE ===== -->
 <div class="page" :class="{active:tab==='perf'}">
-  <div class="loader" x-show="perfLoad"><div class="spin"></div></div>
-  <div x-show="!perfLoad">
-    <div class="kpi-row">
-      <div class="kpi">
-        <div class="kpi-lbl">Signals</div>
-        <div class="kpi-val" style="color:var(--blue)" x-text="perf?.performance?.total_signals||0"></div>
+
+  <!-- Sub-tabs -->
+  <div class="perf-tabs">
+    <button class="perf-tab" :class="{on:perfTab==='portfolio'}" @click="perfTab='portfolio';loadPortfolio()">My Portfolio</button>
+    <button class="perf-tab" :class="{on:perfTab==='learning'}"  @click="perfTab='learning';loadWeights()">AI Learning</button>
+    <button class="perf-tab" :class="{on:perfTab==='history'}"   @click="perfTab='history';loadPerf()">Signals</button>
+  </div>
+
+  <!-- ── PORTFOLIO ── -->
+  <div x-show="perfTab==='portfolio'">
+    <div class="loader" x-show="portLoad"><div class="spin"></div><div class="loader-txt">Refreshing live prices...</div></div>
+
+    <div x-show="!portLoad">
+      <!-- Summary KPIs -->
+      <div class="kpi-row" x-show="portSummary?.total_trades > 0">
+        <div class="kpi">
+          <div class="kpi-lbl">Open</div>
+          <div class="kpi-val" style="color:var(--gold2)" x-text="portSummary?.open_count||0"></div>
+          <div class="kpi-sub">positions</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Win Rate</div>
+          <div class="kpi-val" style="color:var(--green)" x-text="(portSummary?.win_rate||0)+'%'"></div>
+          <div class="kpi-sub" x-text="(portSummary?.win_count||0)+'W / '+(portSummary?.loss_count||0)+'L'"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Avg P&amp;L</div>
+          <div class="kpi-val" :style="'color:'+((portSummary?.avg_pnl||0)>=0?'var(--green)':'var(--red)')"
+               x-text="(portSummary?.avg_pnl||0).toFixed(1)+'%'"></div>
+        </div>
       </div>
-      <div class="kpi">
-        <div class="kpi-lbl">Win Rate</div>
-        <div class="kpi-val" style="color:var(--green)" x-text="(perf?.performance?.win_rate||0)+'%'"></div>
+
+      <!-- Due for evaluation banner -->
+      <div x-show="portSummary?.due_for_eval > 0"
+           style="background:#1c1100;border:1px solid var(--gold);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--gold2)" x-text="portSummary.due_for_eval + ' position(s) ready to evaluate'"></div>
+          <div style="font-size:11px;color:var(--muted)">Agent 5 will retrain weights after evaluation</div>
+        </div>
+        <button @click="evaluateAll()"
+          style="padding:8px 14px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:800;font-size:12px;cursor:pointer">
+          Evaluate All
+        </button>
       </div>
-      <div class="kpi">
-        <div class="kpi-lbl">Avg P&amp;L</div>
-        <div class="kpi-val" :style="'color:'+((perf?.performance?.avg_pnl_pct||0)>=0?'var(--green)':'var(--red)')"
-             x-text="(perf?.performance?.avg_pnl_pct||0).toFixed(1)+'%'"></div>
-      </div>
-    </div>
-    <div class="sec">Signal History</div>
-    <div class="card">
-      <template x-for="s in (sigs?.signals||[]).slice().reverse().slice(0,30)" :key="s.id">
-        <div class="sig-row">
-          <div style="font-weight:700;font-size:14px;color:var(--gold2);width:52px" x-text="s.ticker"></div>
-          <div class="badge" :class="badgeCls(s.action)" x-text="s.action" style="flex-shrink:0"></div>
-          <div style="flex:1;text-align:right;font-size:12px;color:var(--muted)"
-               x-text="'$'+(s.entry_price||'--')+' -> $'+(s.target_price||'--')"></div>
-          <div style="width:52px;text-align:right">
-            <span x-show="!s.outcome" style="font-size:11px;color:var(--muted)">Open</span>
-            <span x-show="s.outcome" :style="'font-size:12px;font-weight:700;color:'+(s.outcome==='WIN'?'var(--green)':'var(--red)')"
-                  x-text="(s.pnl_pct>=0?'+':'')+s.pnl_pct+'%'"></span>
+
+      <!-- Position cards -->
+      <template x-for="pos in (portfolio||[])" :key="pos.id">
+        <div class="pos-card" :class="pos.status==='WIN'?'win':pos.status==='LOSS'?'loss':pos.status==='STOPPED_OUT'?'stopped':'open'">
+          <div class="pos-header">
+            <div>
+              <div class="pos-ticker" x-text="pos.ticker"></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">
+                <span x-text="pos.timeframe+' · Entered '+fmtDate(pos.added_at)"></span>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="pos-status" :class="'status-'+pos.status.toLowerCase().replace('_','')" x-text="pos.status.replace('_',' ')"></div>
+              <div style="font-size:10px;color:var(--muted);margin-top:4px" x-text="pos.days_remaining > 0 ? pos.days_remaining+'d remaining' : 'Due for evaluation'"></div>
+            </div>
+          </div>
+
+          <!-- P&L bar -->
+          <div x-show="pos.pnl_pct != null">
+            <div class="pnl-bar-track">
+              <div class="pnl-bar-fill"
+                   :style="'width:'+Math.min(100,Math.abs(pos.pnl_pct||0)*5+50)+'%;background:'+(pos.pnl_pct>=0?'var(--green)':'var(--red)')"></div>
+            </div>
+          </div>
+
+          <!-- Grid: key numbers -->
+          <div class="pos-grid">
+            <div class="pos-cell">
+              <div class="pos-cell-lbl">Entry</div>
+              <div class="pos-cell-val" x-text="'$'+pos.entry_price"></div>
+            </div>
+            <div class="pos-cell">
+              <div class="pos-cell-lbl">Current</div>
+              <div class="pos-cell-val" :style="'color:'+(pos.pnl_pct>=0?'var(--green)':'var(--red)')"
+                   x-text="pos.current_price ? '$'+pos.current_price : '--'"></div>
+            </div>
+            <div class="pos-cell">
+              <div class="pos-cell-lbl">P&amp;L</div>
+              <div class="pos-cell-val" :style="'color:'+((pos.pnl_pct||0)>=0?'var(--green)':'var(--red)')"
+                   x-text="pos.pnl_pct != null ? (pos.pnl_pct>=0?'+':'')+pos.pnl_pct+'%' : '--'"></div>
+            </div>
+            <div class="pos-cell">
+              <div class="pos-cell-lbl">Target</div>
+              <div class="pos-cell-val" style="color:var(--cyan);font-size:12px" x-text="pos.target_price ? '$'+pos.target_price : '--'"></div>
+            </div>
+            <div class="pos-cell">
+              <div class="pos-cell-lbl">Stop Loss</div>
+              <div class="pos-cell-val" style="color:var(--red);font-size:12px" x-text="pos.stop_loss ? '$'+pos.stop_loss : '--'"></div>
+            </div>
+            <div class="pos-cell">
+              <div class="pos-cell-lbl">AI Signal</div>
+              <div class="badge" :class="badgeCls(pos.action)" x-text="pos.action" style="font-size:9px;display:block;text-align:center;margin-top:2px"></div>
+            </div>
+          </div>
+
+          <!-- Evaluation notes -->
+          <template x-for="note in (pos.evaluation_notes||[])" :key="note">
+            <div style="font-size:11px;color:var(--muted);padding:2px 0">- <span x-text="note"></span></div>
+          </template>
+
+          <!-- Action buttons -->
+          <div class="pos-actions" x-show="pos.status==='OPEN'">
+            <button class="pos-action-btn eval-btn" @click="evaluatePosition(pos.id)"
+                    x-text="pos.due_for_eval ? 'Evaluate & Retrain' : 'Evaluate Now'"></button>
+            <button class="pos-action-btn close-pos-btn" @click="closePosition(pos.id)">Close Position</button>
           </div>
         </div>
       </template>
-      <div class="empty" x-show="!sigs?.signals?.length">
-        <div class="empty-sub">No signals yet. Run Screen All to generate.</div>
+
+      <!-- Empty state -->
+      <div class="empty" x-show="!portLoad && (!portfolio || portfolio.length === 0)">
+        <div class="empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="empty-title">No positions tracked</div>
+        <div class="empty-sub">Go to Dashboard or Analyze a stock, then tap<br><strong style="color:var(--gold2)">Track This Stock</strong> to start monitoring</div>
       </div>
     </div>
   </div>
+
+  <!-- ── AI LEARNING ── -->
+  <div x-show="perfTab==='learning'">
+    <div class="loader" x-show="weightsLoad"><div class="spin"></div></div>
+    <div x-show="!weightsLoad">
+
+      <div class="learn-card">
+        <div class="learn-title">Cyclic Learning Engine</div>
+        <div class="learn-sub">
+          Agent 5 adjusts Agent 2 scoring weights based on real prediction outcomes.
+          More accurate dimensions get higher weights over time.
+        </div>
+        <div style="display:flex;gap:12px;font-size:12px">
+          <div><span style="color:var(--muted)">Retrains:</span> <strong x-text="weightInsight?.retrain_count||0"></strong></div>
+          <div><span style="color:var(--muted)">Last:</span> <strong style="font-size:11px" x-text="weightInsight?.last_retrained ? fmtDate(weightInsight.last_retrained) : 'Not yet'"></strong></div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic" x-text="weightInsight?.last_reason || 'Add and evaluate positions to trigger learning'"></div>
+      </div>
+
+      <div class="sec">Current Agent 2 Scoring Weights</div>
+      <div class="card" style="padding:16px">
+        <template x-for="[dim, w] in Object.entries(weightInsight?.current_weights||{})" :key="dim">
+          <div class="wbar-wrap">
+            <div class="wbar-header">
+              <span class="wbar-label" x-text="dim.replace(/_/g,' ')"></span>
+              <div style="display:flex;gap:12px;align-items:center">
+                <span style="font-size:10px;color:var(--muted)"
+                      x-text="'default: '+(((weightInsight?.default_weights||{})[dim]||0)*100).toFixed(0)+'%'"></span>
+                <span class="wbar-pct"
+                      :style="'color:'+weightDriftColor((weightInsight?.drift||{})[dim]||0)"
+                      x-text="(w*100).toFixed(1)+'%'"></span>
+              </div>
+            </div>
+            <div class="wbar-track">
+              <div class="wbar-fill"
+                   :style="'width:'+(w*200)+'%;background:'+weightBarColor(dim)"></div>
+              <!-- Default marker -->
+              <div class="wbar-default"
+                   :style="'left:'+((weightInsight?.default_weights||{})[dim]||0)*200+'%'"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Retrain log -->
+      <div class="sec" x-show="retrainLog?.length">Retraining History</div>
+      <div class="card" x-show="retrainLog?.length">
+        <template x-for="(entry, idx) in (retrainLog||[]).slice().reverse().slice(0,5)" :key="idx">
+          <div style="padding:12px 16px;border-bottom:1px solid rgba(30,45,69,.5)">
+            <div style="font-size:12px;font-weight:700;color:var(--text)" x-text="entry.reason"></div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px" x-text="fmtDate(entry.timestamp)"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+              <template x-for="[dim,data] in Object.entries(entry.adjustments||{})" :key="dim">
+                <div style="font-size:10px;padding:2px 8px;border-radius:6px"
+                     :style="'background:'+(data.direction==='up'?'#052e16':'#450a0a')+';color:'+(data.direction==='up'?'#4ade80':'#fca5a5')"
+                     x-text="dim.replace(/_/g,' ')+' '+(data.direction==='up'?'+':'')+((data.new-data.old)*100).toFixed(1)+'pp'">
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="empty" x-show="!retrainLog?.length">
+        <div class="empty-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <div class="empty-title">No learning yet</div>
+        <div class="empty-sub">Add stocks to your portfolio and evaluate them<br>to start the cyclic learning loop</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SIGNAL HISTORY ── -->
+  <div x-show="perfTab==='history'">
+    <div class="loader" x-show="perfLoad"><div class="spin"></div></div>
+    <div x-show="!perfLoad">
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-lbl">Signals</div>
+          <div class="kpi-val" style="color:var(--blue)" x-text="perf?.performance?.total_signals||0"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Win Rate</div>
+          <div class="kpi-val" style="color:var(--green)" x-text="(perf?.performance?.win_rate||0)+'%'"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Avg P&amp;L</div>
+          <div class="kpi-val" :style="'color:'+((perf?.performance?.avg_pnl_pct||0)>=0?'var(--green)':'var(--red)')"
+               x-text="(perf?.performance?.avg_pnl_pct||0).toFixed(1)+'%'"></div>
+        </div>
+      </div>
+      <div class="card">
+        <template x-for="s in (sigs?.signals||[]).slice().reverse().slice(0,30)" :key="s.id">
+          <div class="sig-row">
+            <div style="font-weight:700;font-size:14px;color:var(--gold2);width:52px" x-text="s.ticker"></div>
+            <div class="badge" :class="badgeCls(s.action)" x-text="s.action" style="flex-shrink:0"></div>
+            <div style="flex:1;text-align:right;font-size:12px;color:var(--muted)"
+                 x-text="'$'+(s.entry_price||'--')+' to $'+(s.target_price||'--')"></div>
+            <div style="width:52px;text-align:right">
+              <span x-show="!s.outcome" style="font-size:11px;color:var(--muted)">Open</span>
+              <span x-show="s.outcome" :style="'font-size:12px;font-weight:700;color:'+(s.outcome==='WIN'?'var(--green)':'var(--red)')"
+                    x-text="(s.pnl_pct>=0?'+':'')+s.pnl_pct+'%'"></span>
+            </div>
+          </div>
+        </template>
+        <div class="empty" x-show="!sigs?.signals?.length">
+          <div class="empty-sub">No signals yet. Screen stocks to generate.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 </div><!-- /wrap -->
@@ -566,7 +847,10 @@
         <span style="font-size:12px;color:var(--muted)" x-text="sel?.summary?.confidence+'% confidence'"></span>
       </div>
     </div>
-    <button class="close-btn" @click="closeSheet()">x</button>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <button class="close-btn" @click="closeSheet()">x</button>
+        <button class="track-btn" @click="openAddModal(sel)">Track</button>
+      </div>
   </div>
 
   <div class="sec">Analyst Consensus</div>
@@ -694,7 +978,7 @@
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
     <span>Agents</span>
   </button>
-  <button class="nav-btn" :class="{on:tab==='perf'}" @click="tab='perf';loadPerf()">
+  <button class="nav-btn" :class="{on:tab==='perf'}" @click="tab='perf';perfTab='portfolio';loadPortfolio()">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
     <span>Performance</span>
   </button>
@@ -708,6 +992,13 @@ function app(){return{
   stocks:[], sel:null, sheetOpen:false,
   filterBy:'', searchTicker:'', ar:null, analyzeErr:'',
   perf:null, sigs:null, lastUpdated:'', totalTickers:20,
+  // Portfolio
+  portfolio:[], portSummary:{}, portLoad:false,
+  addModalOpen:false, modalStock:null, selectedTf:'1M', addingPosition:false,
+  // Learning
+  weightInsight:null, retrainLog:[], weightsLoad:false,
+  // Perf sub-tabs
+  perfTab:'portfolio',
   radarObj:null,
 
   filters:[
@@ -766,6 +1057,92 @@ function app(){return{
     finally{this.analyzing=false;}
   },
 
+  async loadPortfolio(){
+    this.portLoad=true;
+    try{
+      const r=await this.apiFetch('/api/portfolio');
+      const d=await r.json();
+      this.portfolio=d.positions||[];
+      this.portSummary=d.summary||{};
+    }catch(e){console.error(e);}
+    finally{this.portLoad=false;}
+  },
+  async loadWeights(){
+    this.weightsLoad=true;
+    try{
+      const[w,l]=await Promise.all([
+        this.apiFetch('/api/portfolio/weights').then(r=>r.json()),
+        this.apiFetch('/api/portfolio/retrain_log').then(r=>r.json()),
+      ]);
+      this.weightInsight=w;
+      this.retrainLog=l.log||[];
+    }catch(e){console.error(e);}
+    finally{this.weightsLoad=false;}
+  },
+  openAddModal(stock){
+    this.modalStock=stock;
+    this.addModalOpen=true;
+    this.selectedTf='1M';
+  },
+  async confirmAdd(){
+    if(!this.modalStock) return;
+    this.addingPosition=true;
+    try{
+      const r=await this.apiFetch('/api/portfolio/add',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},
+        body:JSON.stringify({ticker:this.modalStock.ticker, timeframe:this.selectedTf}),
+      });
+      if(!r.ok) throw new Error(await r.text());
+      this.addModalOpen=false;
+      this.tab='perf';
+      this.perfTab='portfolio';
+      await this.loadPortfolio();
+    }catch(e){alert('Error: '+e.message);}
+    finally{this.addingPosition=false;}
+  },
+  async evaluatePosition(id){
+    try{
+      const r=await this.apiFetch('/api/portfolio/evaluate/'+id,{method:'POST',headers:{'ngrok-skip-browser-warning':'1'}});
+      const d=await r.json();
+      await this.loadPortfolio();
+      await this.loadWeights();
+      if(d.retrain?.adjustments && Object.keys(d.retrain.adjustments).length){
+        alert('Agent 5 retrained! ' + d.retrain.message);
+      }
+    }catch(e){alert('Error: '+e.message);}
+  },
+  async closePosition(id){
+    try{
+      await this.apiFetch('/api/portfolio/close/'+id,{method:'POST',headers:{'ngrok-skip-browser-warning':'1'}});
+      await this.loadPortfolio();
+    }catch(e){alert('Error: '+e.message);}
+  },
+  async evaluateAll(){
+    try{
+      const r=await this.apiFetch('/api/portfolio/evaluate_all',{method:'POST',headers:{'ngrok-skip-browser-warning':'1'}});
+      const d=await r.json();
+      await this.loadPortfolio();
+      await this.loadWeights();
+      alert('Evaluated '+d.evaluated_count+' positions. ' + d.retrain.message);
+    }catch(e){alert('Error: '+e.message);}
+  },
+  weightBarColor(dim){
+    const c={fundamental_quality:'#c9a84c',technical_signal:'#3b82f6',
+             momentum:'#22c55e',news_sentiment:'#a855f7',
+             social_sentiment:'#06b6d4',valuation:'#f97316'};
+    return c[dim]||'#64748b';
+  },
+  weightDriftColor(drift){
+    if(drift > 0.02) return 'var(--green)';
+    if(drift < -0.02) return 'var(--red)';
+    return 'var(--muted)';
+  },
+  fmtDate(iso){
+    if(!iso) return '--';
+    try{ return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'}); }
+    catch{ return iso.slice(0,10); }
+  },
   async loadPerf(){
     if(this.perf) return;
     this.perfLoad=true;
@@ -841,5 +1218,49 @@ function app(){return{
   },
 };}
 </script>
+
+<!-- ADD TO PORTFOLIO MODAL -->
+<div class="modal-overlay" :class="{on: addModalOpen}" @click.self="addModalOpen=false">
+  <div class="modal">
+    <div class="modal-title" x-text="'Track ' + (modalStock?.ticker || '')"></div>
+    <div class="modal-sub">Lock in this recommendation and monitor real P&L</div>
+
+    <!-- Stock snapshot -->
+    <div style="display:flex;gap:12px;margin-bottom:16px">
+      <div style="flex:1;background:var(--card2);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">ACTION</div>
+        <div class="badge" :class="badgeCls(modalStock?.summary?.action)" x-text="modalStock?.summary?.action" style="display:block;text-align:center"></div>
+      </div>
+      <div style="flex:1;background:var(--card2);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">ENTRY</div>
+        <div style="font-size:15px;font-weight:700" x-text="modalStock?.price_targets?.current ? '$'+modalStock.price_targets.current : '--'"></div>
+      </div>
+      <div style="flex:1;background:var(--card2);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:var(--muted);margin-bottom:3px">TARGET</div>
+        <div style="font-size:15px;font-weight:700;color:var(--green)" x-text="modalStock?.price_targets?.analyst_target ? '$'+modalStock.price_targets.analyst_target : '--'"></div>
+      </div>
+    </div>
+
+    <!-- Timeframe selection -->
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Monitor for how long?</div>
+    <div class="tf-grid">
+      <button class="tf-btn" :class="{on:selectedTf==='2W'}" @click="selectedTf='2W'">2 Weeks</button>
+      <button class="tf-btn" :class="{on:selectedTf==='1M'}" @click="selectedTf='1M'">1 Month</button>
+      <button class="tf-btn" :class="{on:selectedTf==='3M'}" @click="selectedTf='3M'">3 Months</button>
+      <button class="tf-btn" :class="{on:selectedTf==='6M'}" @click="selectedTf='6M'">6 Months</button>
+    </div>
+
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:4px">
+      When the period ends, Agent 5 evaluates accuracy and retrains the model
+    </div>
+
+    <button class="confirm-btn" @click="confirmAdd()" :disabled="addingPosition">
+      <span x-show="!addingPosition">Start Tracking</span>
+      <span x-show="addingPosition">Adding...</span>
+    </button>
+    <button class="cancel-btn" @click="addModalOpen=false">Cancel</button>
+  </div>
+</div>
+
 </body>
 </html>
